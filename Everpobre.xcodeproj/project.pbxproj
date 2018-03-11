@@ -13,6 +13,7 @@
 		633B670D2054915B00BEB5E1 /* EverpobreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633B670C2054915B00BEB5E1 /* EverpobreTests.swift */; };
 		633B67192054929E00BEB5E1 /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633B67172054929E00BEB5E1 /* NoteViewController.swift */; };
 		633B671A2054929E00BEB5E1 /* NoteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 633B67182054929E00BEB5E1 /* NoteViewController.xib */; };
+		633B671C2054AB5600BEB5E1 /* NoteViewByCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633B671B2054AB5600BEB5E1 /* NoteViewByCodeController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		633B670E2054915B00BEB5E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		633B67172054929E00BEB5E1 /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
 		633B67182054929E00BEB5E1 /* NoteViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NoteViewController.xib; sourceTree = "<group>"; };
+		633B671B2054AB5600BEB5E1 /* NoteViewByCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewByCodeController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 				633B67032054915B00BEB5E1 /* Info.plist */,
 				633B67172054929E00BEB5E1 /* NoteViewController.swift */,
 				633B67182054929E00BEB5E1 /* NoteViewController.xib */,
+				633B671B2054AB5600BEB5E1 /* NoteViewByCodeController.swift */,
 			);
 			path = Everpobre;
 			sourceTree = "<group>";
@@ -201,6 +204,7 @@
 			files = (
 				633B67192054929E00BEB5E1 /* NoteViewController.swift in Sources */,
 				633B66F82054915B00BEB5E1 /* AppDelegate.swift in Sources */,
+				633B671C2054AB5600BEB5E1 /* NoteViewByCodeController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
