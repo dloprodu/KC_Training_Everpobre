@@ -14,6 +14,9 @@
 		633B67192054929E00BEB5E1 /* NoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633B67172054929E00BEB5E1 /* NoteViewController.swift */; };
 		633B671A2054929E00BEB5E1 /* NoteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 633B67182054929E00BEB5E1 /* NoteViewController.xib */; };
 		633B671C2054AB5600BEB5E1 /* NoteViewByCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633B671B2054AB5600BEB5E1 /* NoteViewByCodeController.swift */; };
+		637210E92057182800F17293 /* Everpobre.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 637210E72057182800F17293 /* Everpobre.xcdatamodeld */; };
+		637210EB205720A400F17293 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637210EA205720A400F17293 /* DataManager.swift */; };
+		637210ED20572F3D00F17293 /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637210EC20572F3D00F17293 /* NoteTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +41,9 @@
 		633B67172054929E00BEB5E1 /* NoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewController.swift; sourceTree = "<group>"; };
 		633B67182054929E00BEB5E1 /* NoteViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NoteViewController.xib; sourceTree = "<group>"; };
 		633B671B2054AB5600BEB5E1 /* NoteViewByCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteViewByCodeController.swift; sourceTree = "<group>"; };
+		637210E82057182800F17293 /* Everpobre.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Everpobre.xcdatamodel; sourceTree = "<group>"; };
+		637210EA205720A400F17293 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		637210EC20572F3D00F17293 /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +85,7 @@
 		633B66F62054915A00BEB5E1 /* Everpobre */ = {
 			isa = PBXGroup;
 			children = (
+				637210E62057176A00F17293 /* Model */,
 				633B66F72054915B00BEB5E1 /* AppDelegate.swift */,
 				633B66FE2054915B00BEB5E1 /* Assets.xcassets */,
 				633B67002054915B00BEB5E1 /* LaunchScreen.storyboard */,
@@ -86,6 +93,7 @@
 				633B67172054929E00BEB5E1 /* NoteViewController.swift */,
 				633B67182054929E00BEB5E1 /* NoteViewController.xib */,
 				633B671B2054AB5600BEB5E1 /* NoteViewByCodeController.swift */,
+				637210EC20572F3D00F17293 /* NoteTableViewController.swift */,
 			);
 			path = Everpobre;
 			sourceTree = "<group>";
@@ -97,6 +105,15 @@
 				633B670E2054915B00BEB5E1 /* Info.plist */,
 			);
 			path = EverpobreTests;
+			sourceTree = "<group>";
+		};
+		637210E62057176A00F17293 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				637210E72057182800F17293 /* Everpobre.xcdatamodeld */,
+				637210EA205720A400F17293 /* DataManager.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -202,7 +219,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				637210E92057182800F17293 /* Everpobre.xcdatamodeld in Sources */,
+				637210EB205720A400F17293 /* DataManager.swift in Sources */,
 				633B67192054929E00BEB5E1 /* NoteViewController.swift in Sources */,
+				637210ED20572F3D00F17293 /* NoteTableViewController.swift in Sources */,
 				633B66F82054915B00BEB5E1 /* AppDelegate.swift in Sources */,
 				633B671C2054AB5600BEB5E1 /* NoteViewByCodeController.swift in Sources */,
 			);
@@ -440,6 +460,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		637210E72057182800F17293 /* Everpobre.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				637210E82057182800F17293 /* Everpobre.xcdatamodel */,
+			);
+			currentVersion = 637210E82057182800F17293 /* Everpobre.xcdatamodel */;
+			path = Everpobre.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 633B66EC2054915A00BEB5E1 /* Project object */;
 }

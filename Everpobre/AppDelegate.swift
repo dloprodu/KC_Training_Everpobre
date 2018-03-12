@@ -18,9 +18,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow()
         
-        let noteVC = NoteViewByCodeController() //NoteViewController()
+        //let noteVC = NoteViewByCodeController() //NoteViewController()
+        let noteTableVC = NoteTableViewController()
         
-        let navController = UINavigationController(rootViewController: noteVC)
+        let navController = UINavigationController(rootViewController: noteTableVC)
         
         window?.rootViewController = navController
         

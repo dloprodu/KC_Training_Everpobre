@@ -26,6 +26,8 @@ class NoteViewByCodeController: UIViewController  {
     
     var relativePoint: CGPoint!
     
+    var note: Note?
+    
     // MARK: - Life Cycle
     
     override func loadView() {
@@ -85,7 +87,6 @@ class NoteViewByCodeController: UIViewController  {
         constraints.append(NSLayoutConstraint(item: dateLabel, attribute: .top, relatedBy: .equal, toItem: backView.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 10))
         
         
-        
         // Option A
         // dateLabel.topAnchor.constraint(equalTo: backView.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         
@@ -126,6 +127,9 @@ class NoteViewByCodeController: UIViewController  {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Delegates
+        titleTextField.delegate = self
+        
         // Navigation Controller
         navigationController?.isToolbarHidden = false
         
@@ -156,6 +160,8 @@ class NoteViewByCodeController: UIViewController  {
         
         imageView.addGestureRecognizer(moveViewGesture)
         
+        // Sync model
+        titleTextField.text = note?.title
     }
     
     override func viewDidLayoutSubviews() {
@@ -222,7 +228,6 @@ class NoteViewByCodeController: UIViewController  {
             topImgConstraint.constant = location.y - relativePoint.y
             
         case .ended, .cancelled:
-            
             UIView.animate(withDuration: 0.1, animations: {
                 self.imageView.transform = CGAffineTransform.init(scaleX: 1, y: 1)
             })
@@ -230,7 +235,6 @@ class NoteViewByCodeController: UIViewController  {
         default:
             break
         }
-        
     }
     
     // MARK: Toolbar Buttons actions
@@ -256,8 +260,6 @@ class NoteViewByCodeController: UIViewController  {
         actionSheetAlert.addAction(usePhotoLibrary)
         actionSheetAlert.addAction(cancel)
         
-        
-        
         present(actionSheetAlert, animated: true, completion: nil)
     }
     
@@ -267,9 +269,7 @@ class NoteViewByCodeController: UIViewController  {
 }
 
 // MARK: Navigation Delegate
-
 extension NoteViewByCodeController : UINavigationControllerDelegate {
-    
 }
 
 // MARK: Image Picker Delegate
@@ -282,5 +282,19 @@ extension NoteViewByCodeController : UIImagePickerControllerDelegate {
         imageView.image = image
         
         picker.dismiss(animated: true, completion: nil)
+    }
+}
+
+// MARK: Text Field Delegate
+
+extension NoteViewByCodeController : UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        note?.title = textField.text
+        
+        do {
+            try note?.managedObjectContext?.save()
+        } catch {
+            
+        }
     }
 }
