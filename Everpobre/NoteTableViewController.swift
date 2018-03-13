@@ -11,8 +11,12 @@ import CoreData
 
 class NoteTableViewController: UITableViewController {
 
-    var notes: [Note] = []
+    // MARK: - Properties
     
+    // var notes: [Note] = []
+    var fetchResultController: NSFetchedResultsController<Note>!
+    
+    // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,19 +47,23 @@ class NoteTableViewController: UITableViewController {
         let predicate = NSPredicate(format: "createdAtTI > %f", created24H)
         fetchRequest.predicate = predicate
         
+        // No es necesario con NSFetchedController
         // 5.- Ejecutar request.
-        do {
-           try notes = viewMOC.fetch(fetchRequest)
-        } catch {
-            print(error)
-        }
+        // do {
+        //   try notes = viewMOC.fetch(fetchRequest)
+        // } catch {
+        //    print(error)
+        // }
+        
+        self.fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewMOC, sectionNameKeyPath: nil, cacheName: nil)
+        
+        try! fetchResultController.performFetch()
+        
+        fetchResultController.delegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // NotificationCenter.default.addObserver(tableView, selector: #selector(reloadData), name: NSNotification.Name( NSManagedObjectContextObjectsDidChangeNotification ), object: nil)
-        tableView.reloadData()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -65,25 +73,34 @@ class NoteTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        // return 1
+        return fetchResultController.sections?.count ?? 1
     }
-
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return fetchResultController.sections?[section].name ?? "-"
+    }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return notes.count
+        // return notes.count
+        return fetchResultController.sections?[section].numberOfObjects ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier") ??
             UITableViewCell(style: .default, reuseIdentifier: "reuseIdentifier")
 
-        cell.textLabel?.text = notes[indexPath.row].title
+        // cell.textLabel?.text = notes[indexPath.row].title
+        cell.textLabel?.text = fetchResultController.object(at: indexPath).title
         
         return cell
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // let note = notes[indexPath.row]
+        let note = fetchResultController.object(at: indexPath)
         let noteVC = NoteViewByCodeController()
-        noteVC.note = notes[indexPath.row]
+        noteVC.note = note
         navigationController?.pushViewController(noteVC, animated: true)
     }
 
@@ -93,7 +110,7 @@ class NoteTableViewController: UITableViewController {
         privateMOC.perform {
             let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: privateMOC) as! Note
             
-            note.title = "New Note - \(self.notes.count + 1)"
+            note.title = "New Note"
             note.createdAtTI = Date().timeIntervalSince1970
             
             do {
@@ -102,12 +119,19 @@ class NoteTableViewController: UITableViewController {
                 
             }
         
-            DispatchQueue.main.async {
-                let viewNote = DataManager.shared.persistentContainer.viewContext.object(with: note.objectID) as! Note
+            // Ya no es necesario con NSFetchedController
+            //DispatchQueue.main.async {
+            //    let viewNote = DataManager.shared.persistentContainer.viewContext.object(with: note.objectID) as! Note
                 
-                self.notes.append(viewNote)
-                self.tableView.reloadData()
-            }
+            //    self.notes.append(viewNote)
+            //    self.tableView.reloadData()
+            //}
         }
+    }
+}
+
+extension NoteTableViewController : NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        self.tableView.reloadData()
     }
 }

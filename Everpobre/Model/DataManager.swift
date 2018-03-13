@@ -20,6 +20,8 @@ class DataManager: NSObject {
             if let err = error {
                 print(err)
             }
+            
+            container.viewContext.automaticallyMergesChangesFromParent = true
         }
         
         return container
