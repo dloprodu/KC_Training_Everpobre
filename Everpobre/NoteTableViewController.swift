@@ -47,6 +47,9 @@ class NoteTableViewController: UITableViewController {
         let predicate = NSPredicate(format: "createdAtTI > %f", created24H)
         fetchRequest.predicate = predicate
         
+        // carga en memoria en paquetes de 25 (util para trabajar con listas muy grandes)
+        fetchRequest.fetchBatchSize = 25
+        
         // No es necesario con NSFetchedController
         // 5.- Ejecutar request.
         // do {
@@ -110,8 +113,14 @@ class NoteTableViewController: UITableViewController {
         privateMOC.perform {
             let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: privateMOC) as! Note
             
-            note.title = "New Note"
-            note.createdAtTI = Date().timeIntervalSince1970
+            let dic: [String:Any] = [
+                "title": "New Note",
+                "createdAtTI": Date().timeIntervalSince1970
+            ]
+            
+            //note.title = "New Note"
+            //note.createdAtTI = Date().timeIntervalSince1970
+            note.setValuesForKeys(dic)
             
             do {
                 try privateMOC.save()
