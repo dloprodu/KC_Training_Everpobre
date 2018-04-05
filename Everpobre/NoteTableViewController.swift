@@ -82,7 +82,7 @@ class NoteTableViewController: UITableViewController {
         //    print(error)
         // }
         
-        self.fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewMOC, sectionNameKeyPath: nil, cacheName: nil)
+        self.fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewMOC, sectionNameKeyPath: "notebook.name", cacheName: nil)
         
         try! fetchResultController.performFetch()
         
@@ -91,6 +91,10 @@ class NoteTableViewController: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        if (fetchResultController.fetchedObjects?.count == 0) {
+            return
+        }
         
         let section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
         let row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
@@ -172,6 +176,9 @@ class NoteTableViewController: UITableViewController {
             //note.title = "New Note"
             //note.createdAtTI = Date().timeIntervalSince1970
             note.setValuesForKeys(dic)
+            if let defaultNotebook = DataManager.shared.getDefaultNotebook(in: privateMOC) {
+                note.notebook = defaultNotebook
+            }
             
             do {
                 try privateMOC.save()
