@@ -9,8 +9,10 @@
 import UIKit
 
 class NoteViewByCodeController: UIViewController  {
-
-    // MARK: - Properties
+    
+    // MARK: - Subviews
+    
+    let formatter: DateFormatter
     
     let dateLabel = UILabel()
     let expirationDate = UILabel()
@@ -26,7 +28,25 @@ class NoteViewByCodeController: UIViewController  {
     
     var relativePoint: CGPoint!
     
+    // MARK: - Properties
+    
     var note: Note?
+    
+    // MARK: - Initialization
+    
+    init(model: Note?) {
+        self.note = model
+        self.formatter = DateFormatter()
+        self.formatter.dateFormat = "yyyy/MM/dd"
+        
+        super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
+        
+        title = "Detail"
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Life Cycle
     
@@ -36,11 +56,11 @@ class NoteViewByCodeController: UIViewController  {
         backView.backgroundColor = .white
         
         // Configure label
-        dateLabel.text = "25/02/2018"
+        dateLabel.text = "----/--/--"
         backView.addSubview(dateLabel)
         
         // Configure Expiration label
-        expirationDate.text = "03/04/2018"
+        expirationDate.text = "----/--/--"
         backView.addSubview(expirationDate)
         
         
@@ -49,14 +69,13 @@ class NoteViewByCodeController: UIViewController  {
         backView.addSubview(titleTextField)
         
         // Configure noteTextView
-        noteTextView.text = "Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda."
+        noteTextView.text = "..."
         
         backView.addSubview(noteTextView)
         
         // Configure imageView
         imageView.backgroundColor = .red
         backView.addSubview(imageView)
-        
         
         // MARK: Autolayout.
         
@@ -120,7 +139,6 @@ class NoteViewByCodeController: UIViewController  {
         
         NSLayoutConstraint.deactivate([bottomImgConstraint,rightImgConstraint])
         
-        
         self.view = backView
     }
     
@@ -161,7 +179,7 @@ class NoteViewByCodeController: UIViewController  {
         imageView.addGestureRecognizer(moveViewGesture)
         
         // Sync model
-        titleTextField.text = note?.title
+        self.syncModelWithView()
     }
     
     override func viewDidLayoutSubviews() {
@@ -176,6 +194,17 @@ class NoteViewByCodeController: UIViewController  {
         super.viewWillAppear(animated)
         
         titleTextField.becomeFirstResponder()
+    }
+    
+    // MARK: - Helpers
+    
+    func syncModelWithView() {
+        dateLabel.text = self.formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.note?.createdAtTI ?? 0)))
+        // expirationDate.text =
+        titleTextField.text = self.note?.title
+        noteTextView.text = self.note?.content
+        
+       // imageView
     }
     
     // MARK: - Actions
@@ -269,6 +298,16 @@ class NoteViewByCodeController: UIViewController  {
 }
 
 // MARK: Navigation Delegate
+
+extension NoteViewByCodeController : NoteTableViewControllerDelegate {
+    func noteTableViewController(_ viewController: NoteTableViewController, didSelectNote: Note) {
+        self.note = didSelectNote
+        self.syncModelWithView()
+    }
+}
+
+// MARK: Navigation Delegate
+
 extension NoteViewByCodeController : UINavigationControllerDelegate {
 }
 

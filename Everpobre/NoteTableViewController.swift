@@ -9,12 +9,36 @@
 import UIKit
 import CoreData
 
+enum NoteTableViewControllerKeys: String {
+    case NoteDidChangeNotificationName
+    case LastNote
+    case LastSection
+    case LastRow
+}
+
+protocol NoteTableViewControllerDelegate: class {
+    // should, will, did
+    func noteTableViewController (_ viewController: NoteTableViewController, didSelectNote: Note)
+}
+
 class NoteTableViewController: UITableViewController {
 
     // MARK: - Properties
     
-    // var notes: [Note] = []
+    weak var delegate: NoteTableViewControllerDelegate?
     var fetchResultController: NSFetchedResultsController<Note>!
+    
+    // MARK: - Initialization
+    
+    init() {
+        super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
+        
+        title = "Notes"
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Life Cycle
     
@@ -67,6 +91,19 @@ class NoteTableViewController: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        let section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
+        let row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
+        let indexPath = IndexPath(item: row, section: section)
+        
+        self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
+        
+        let note = fetchResultController.object(at: indexPath)
+        let collapsed = splitViewController?.isCollapsed ?? true
+        
+        if !collapsed {
+            delegate?.noteTableViewController(self, didSelectNote: note)
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -76,7 +113,6 @@ class NoteTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // return 1
         return fetchResultController.sections?.count ?? 1
     }
     
@@ -100,13 +136,27 @@ class NoteTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // let note = notes[indexPath.row]
         let note = fetchResultController.object(at: indexPath)
-        let noteVC = NoteViewByCodeController()
-        noteVC.note = note
-        navigationController?.pushViewController(noteVC, animated: true)
+        let collapsed = splitViewController?.isCollapsed ?? true
+        
+        if collapsed {
+            self.navigationController?.pushViewController(NoteViewByCodeController(model: note), animated: true)
+        } else {
+            delegate?.noteTableViewController(self, didSelectNote: note)
+        }
+        
+        let notification = Notification(name: Notification.Name(NoteTableViewControllerKeys.NoteDidChangeNotificationName.rawValue),
+            object: self,
+            userInfo: [NoteTableViewControllerKeys.LastNote.rawValue: note])
+        
+        NotificationCenter.default.post(notification)
+        
+        // Guardar las coordenadas (section, row) de la última casa seleccionada
+        saveLastSelectedNote(at: indexPath)
     }
 
+    // MARK: - Events
+    
     @objc func addNewNote() {
         let privateMOC = DataManager.shared.persistentContainer.newBackgroundContext()
         
@@ -114,8 +164,9 @@ class NoteTableViewController: UITableViewController {
             let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: privateMOC) as! Note
             
             let dic: [String:Any] = [
-                "title": "New Note",
-                "createdAtTI": Date().timeIntervalSince1970
+                "title": "New Note \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1 )",
+                "createdAtTI": Date().timeIntervalSince1970,
+                "content": "Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda."
             ]
             
             //note.title = "New Note"
@@ -142,5 +193,29 @@ class NoteTableViewController: UITableViewController {
 extension NoteTableViewController : NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.reloadData()
+    }
+}
+
+extension NoteTableViewController {
+    func saveLastSelectedNote(at indexPath: IndexPath) {
+        let defaults = UserDefaults.standard
+        defaults.set(indexPath.section, forKey: NoteTableViewControllerKeys.LastRow.rawValue)
+        defaults.set(indexPath.row, forKey: NoteTableViewControllerKeys.LastRow.rawValue)
+        defaults.synchronize()
+    }
+    
+    func lastSelectedNote() -> Note? {
+        let sections = fetchResultController?.sections?.count ?? 0
+        
+        if (sections == 0) {
+            return nil
+        }
+        
+        let section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
+        let row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
+        
+        let note = fetchResultController.object(at: IndexPath(row: row, section: section))
+        
+        return note
     }
 }

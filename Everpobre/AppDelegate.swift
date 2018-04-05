@@ -17,14 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         window = UIWindow()
-        
-        //let noteVC = NoteViewByCodeController() //NoteViewController()
-        let noteTableVC = NoteTableViewController()
-        
-        let navController = UINavigationController(rootViewController: noteTableVC)
-        
-        window?.rootViewController = navController
-        
+        window?.rootViewController = MasterViewController()
         window?.makeKeyAndVisible()
         
         return true
