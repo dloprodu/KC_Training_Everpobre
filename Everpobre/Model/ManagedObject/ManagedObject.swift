@@ -9,7 +9,7 @@
 import Foundation
 
 extension Note {
-    
+    /*
     override public func setValue(_ value: Any?, forUndefinedKey key: String) {
         let keyToIgnore = ["date", "content"]
         
@@ -21,7 +21,7 @@ extension Note {
             super.setValue(value, forKey: key)
         }
     }
-    
+
     public override func value(forUndefinedKey key: String) -> Any? {
         if key == "main_title" {
             return "main_title"
@@ -29,4 +29,5 @@ extension Note {
             return super.value(forUndefinedKey: key)
         }
     }
+    */
 }

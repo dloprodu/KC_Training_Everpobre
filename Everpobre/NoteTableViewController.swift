@@ -45,7 +45,16 @@ class NoteTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Add Note button
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewNote))
+        
+        // Managage notebooks button
+        navigationController?.isToolbarHidden = false
+        
+        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let notebookButton = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(showNotebooks))
+        
+        self.setToolbarItems([flexible, notebookButton], animated: false)
         
         // Fetch Request
         let viewMOC = DataManager.shared.persistentContainer.viewContext
@@ -94,6 +103,7 @@ class NoteTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // Select last note selected
         if (fetchResultController.fetchedObjects?.count == 0) {
             return
         }
@@ -196,6 +206,14 @@ class NoteTableViewController: UITableViewController {
             //    self.tableView.reloadData()
             //}
         }
+    }
+    
+    // MARK: Toolbar Buttons actions
+    
+    @objc func showNotebooks() {
+        let modalVC = NotebookTableViewController().wrappedInNavigation()
+        modalVC.modalPresentationStyle = .overCurrentContext
+        self.present(modalVC, animated: true) {}
     }
 }
 
