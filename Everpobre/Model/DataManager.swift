@@ -62,6 +62,7 @@ class DataManager: NSObject {
             self._defaultNotebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: privateMOC) as? Notebook
             
             let dic: [String:Any] = [
+                "isDefault": true,
                 "name": "My notebook",
                 "createdAtTI": Date().timeIntervalSince1970
             ]

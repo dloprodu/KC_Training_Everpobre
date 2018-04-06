@@ -62,9 +62,11 @@ class NoteTableViewController: UITableViewController {
         */
         
         // 3.- (Opcional) Queremos un orden? -> Añadir sort description.
+        let sortByNotebookDefault = NSSortDescriptor(key: "notebook.isDefault", ascending: true)
+        let sortByNotebookName = NSSortDescriptor(key: "notebook.name", ascending: true)
         let sortByDate = NSSortDescriptor(key: "createdAtTI", ascending: true)
         let sortByTittle = NSSortDescriptor(key: "title", ascending: true)
-        fetchRequest.sortDescriptors = [sortByDate, sortByTittle]
+        fetchRequest.sortDescriptors = [sortByNotebookDefault, sortByNotebookName, sortByDate, sortByTittle]
         
         // 4.- (Opcional) Filtrado.
         let created24H = Date().timeIntervalSince1970 - 24*3600

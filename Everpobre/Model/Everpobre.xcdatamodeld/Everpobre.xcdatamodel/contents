@@ -8,11 +8,12 @@
     </entity>
     <entity name="Notebook" representedClassName="Notebook" syncable="YES" codeGenerationType="class">
         <attribute name="createdAtTI" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="isDefault" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="notes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Note" inverseName="notebook" inverseEntity="Note" syncable="YES"/>
     </entity>
     <elements>
         <element name="Note" positionX="-9" positionY="54" width="128" height="105"/>
-        <element name="Notebook" positionX="-225" positionY="26" width="128" height="90"/>
+        <element name="Notebook" positionX="-225" positionY="26" width="128" height="105"/>
     </elements>
 </model>
