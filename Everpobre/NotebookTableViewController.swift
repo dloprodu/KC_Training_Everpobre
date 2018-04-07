@@ -18,6 +18,11 @@ class NotebookTableViewController: UITableViewController {
     
     init() {
         super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
+ 
+        tableView.estimatedRowHeight = 44.0
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
+        tableView.register(UINib.init(nibName: "NotebookFormCell", bundle: nil), forCellReuseIdentifier: "formCellReuse")
         
         title = "Notebooks"
     }
@@ -30,8 +35,6 @@ class NotebookTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
         
         // Fetch Request
         let viewMOC = DataManager.shared.persistentContainer.viewContext
@@ -72,6 +75,8 @@ class NotebookTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        self.setupUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -94,11 +99,12 @@ class NotebookTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier") ??
-            UITableViewCell(style: .default, reuseIdentifier: "reuseIdentifier")
+        let notebook = fetchResultController.object(at: indexPath)
         
-        // cell.textLabel?.text = notes[indexPath.row].title
-        cell.textLabel?.text = fetchResultController.object(at: indexPath).name
+        let cell = tableView.dequeueReusableCell(withIdentifier: "formCellReuse") as? NotebookFormCell ?? NotebookFormCell()
+        
+        cell.textField.text = notebook.name
+        cell.isDefault.isOn = notebook.isDefault
         
         return cell
     }
@@ -106,13 +112,43 @@ class NotebookTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
     }
-
-    // MARK: Toolbar Buttons actions
     
+    // MARK: - Helpers
+    
+    func setupUI() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNotebook)),
+            UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editTable))
+        ]
+    }
+}
+
+// MARK: Toolbar Buttons actions
+
+extension NotebookTableViewController {
     @objc func done() {
         dismiss(animated: true, completion: nil)
     }
+    
+    @objc func addNotebook() {
+        
+    }
+    
+    @objc func editTable() {
+        tableView.setEditing(true, animated: true)
+        navigationItem.rightBarButtonItems?.removeLast()
+        navigationItem.rightBarButtonItems?.append(UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelEditTable)))
+    }
+    
+    @objc func cancelEditTable() {
+        tableView.setEditing(false, animated: true)
+        navigationItem.rightBarButtonItems?.removeLast()
+        navigationItem.rightBarButtonItems?.append(UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editTable)))
+    }
 }
+
+// MARK: NSFetchedResultsControllerDelegate
 
 extension NotebookTableViewController : NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {

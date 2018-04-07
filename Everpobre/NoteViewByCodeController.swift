@@ -266,7 +266,7 @@ class NoteViewByCodeController: UIViewController  {
         }
     }
     
-    // MARK: Toolbar Buttons actions
+    // MARK: - Toolbar Buttons actions
     
     @objc func catchPhoto() {
         let actionSheetAlert = UIAlertController(title: NSLocalizedString("Add photo", comment: "Add photo"), message: nil, preferredStyle: .actionSheet)

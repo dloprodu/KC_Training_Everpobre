@@ -44,17 +44,6 @@ class NoteTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Add Note button
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewNote))
-        
-        // Managage notebooks button
-        navigationController?.isToolbarHidden = false
-        
-        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let notebookButton = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(showNotebooks))
-        
-        self.setToolbarItems([flexible, notebookButton], animated: false)
         
         // Fetch Request
         let viewMOC = DataManager.shared.persistentContainer.viewContext
@@ -103,23 +92,8 @@ class NoteTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Select last note selected
-        if (fetchResultController.fetchedObjects?.count == 0) {
-            return
-        }
-        
-        let section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
-        let row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
-        let indexPath = IndexPath(item: row, section: section)
-        
-        self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
-        
-        let note = fetchResultController.object(at: indexPath)
-        let collapsed = splitViewController?.isCollapsed ?? true
-        
-        if !collapsed {
-            delegate?.noteTableViewController(self, didSelectNote: note)
-        }
+        self.setupUI()
+        self.restoreLastSelection()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -170,9 +144,49 @@ class NoteTableViewController: UITableViewController {
         // Guardar las coordenadas (section, row) de la última casa seleccionada
         saveLastSelectedNote(at: indexPath)
     }
-
-    // MARK: - Events
     
+    // MARk: - Helpers
+    
+    func setupUI() {
+        // Add Note button
+        // navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewNote))
+        
+        // Managage notebooks button
+        navigationController?.isToolbarHidden = false
+        
+        let addNoteButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewNote))
+        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let notebookButton = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(showNotebooks))
+        
+        self.setToolbarItems([addNoteButton, flexible, notebookButton], animated: false)
+    }
+    
+    func restoreLastSelection() {
+        // Select last note selected
+        /* TODO
+        if (fetchResultController.fetchedObjects?.count == 0) {
+            return
+        }
+        
+        let section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
+        let row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
+        let indexPath = IndexPath(item: row, section: section)
+        
+        self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
+        
+        let note = fetchResultController.object(at: indexPath)
+        let collapsed = splitViewController?.isCollapsed ?? true
+        
+        if !collapsed {
+            delegate?.noteTableViewController(self, didSelectNote: note)
+        }
+        */
+    }
+}
+
+// MARK: Toolbar Buttons actions
+
+extension NoteTableViewController {
     @objc func addNewNote() {
         let privateMOC = DataManager.shared.persistentContainer.newBackgroundContext()
         
@@ -197,31 +211,33 @@ class NoteTableViewController: UITableViewController {
             } catch {
                 
             }
-        
+            
             // Ya no es necesario con NSFetchedController
             //DispatchQueue.main.async {
             //    let viewNote = DataManager.shared.persistentContainer.viewContext.object(with: note.objectID) as! Note
-                
+            
             //    self.notes.append(viewNote)
             //    self.tableView.reloadData()
             //}
         }
     }
     
-    // MARK: Toolbar Buttons actions
-    
     @objc func showNotebooks() {
-        let modalVC = NotebookTableViewController().wrappedInNavigation()
-        modalVC.modalPresentationStyle = .overCurrentContext
-        self.present(modalVC, animated: true) {}
+        let navVC = NotebookTableViewController().wrappedInNavigation()
+        navVC.modalPresentationStyle = .overCurrentContext
+        self.present(navVC, animated: true) {}
     }
 }
+
+// MARK: NSFetchedResultsControllerDelegate
 
 extension NoteTableViewController : NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.reloadData()
     }
 }
+
+// MARK: Save last selection
 
 extension NoteTableViewController {
     func saveLastSelectedNote(at indexPath: IndexPath) {
