@@ -19,6 +19,8 @@
 		63710EF720780AA8001F24A6 /* NotebookTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63710EF620780AA8001F24A6 /* NotebookTableViewController.swift */; };
 		63710EFA2078C963001F24A6 /* NotebookFormCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63710EF82078C963001F24A6 /* NotebookFormCell.swift */; };
 		63710EFB2078C963001F24A6 /* NotebookFormCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63710EF92078C963001F24A6 /* NotebookFormCell.xib */; };
+		63710EFD20792E37001F24A6 /* BorderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63710EFC20792E37001F24A6 /* BorderButton.swift */; };
+		63710F00207975F0001F24A6 /* Array+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63710EFF207975F0001F24A6 /* Array+Additions.swift */; };
 		637210E92057182800F17293 /* Everpobre.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 637210E72057182800F17293 /* Everpobre.xcdatamodeld */; };
 		637210EB205720A400F17293 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637210EA205720A400F17293 /* DataManager.swift */; };
 		637210ED20572F3D00F17293 /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637210EC20572F3D00F17293 /* NoteTableViewController.swift */; };
@@ -52,6 +54,8 @@
 		63710EF620780AA8001F24A6 /* NotebookTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotebookTableViewController.swift; sourceTree = "<group>"; };
 		63710EF82078C963001F24A6 /* NotebookFormCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotebookFormCell.swift; sourceTree = "<group>"; };
 		63710EF92078C963001F24A6 /* NotebookFormCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NotebookFormCell.xib; sourceTree = "<group>"; };
+		63710EFC20792E37001F24A6 /* BorderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderButton.swift; sourceTree = "<group>"; };
+		63710EFF207975F0001F24A6 /* Array+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Additions.swift"; sourceTree = "<group>"; };
 		637210E82057182800F17293 /* Everpobre.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Everpobre.xcdatamodel; sourceTree = "<group>"; };
 		637210EA205720A400F17293 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		637210EC20572F3D00F17293 /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
@@ -97,6 +101,7 @@
 		633B66F62054915A00BEB5E1 /* Everpobre */ = {
 			isa = PBXGroup;
 			children = (
+				63710EFE207975DB001F24A6 /* Extensions */,
 				635317B72076972800A8E88A /* UIKitExtensions */,
 				637210E62057176A00F17293 /* Model */,
 				633B66F72054915B00BEB5E1 /* AppDelegate.swift */,
@@ -128,8 +133,17 @@
 			isa = PBXGroup;
 			children = (
 				635317B82076974500A8E88A /* UIViewController+Additions.swift */,
+				63710EFC20792E37001F24A6 /* BorderButton.swift */,
 			);
 			path = UIKitExtensions;
+			sourceTree = "<group>";
+		};
+		63710EFE207975DB001F24A6 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				63710EFF207975F0001F24A6 /* Array+Additions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		637210E62057176A00F17293 /* Model */ = {
@@ -255,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				635317B62076963900A8E88A /* MasterViewController.swift in Sources */,
+				63710EFD20792E37001F24A6 /* BorderButton.swift in Sources */,
 				6376AC90205871DE00821B51 /* ManagedObject.swift in Sources */,
 				63710EFA2078C963001F24A6 /* NotebookFormCell.swift in Sources */,
 				63710EF720780AA8001F24A6 /* NotebookTableViewController.swift in Sources */,
@@ -265,6 +280,7 @@
 				637210ED20572F3D00F17293 /* NoteTableViewController.swift in Sources */,
 				633B66F82054915B00BEB5E1 /* AppDelegate.swift in Sources */,
 				633B671C2054AB5600BEB5E1 /* NoteViewByCodeController.swift in Sources */,
+				63710F00207975F0001F24A6 /* Array+Additions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

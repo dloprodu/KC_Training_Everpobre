@@ -9,10 +9,13 @@
 import UIKit
 import CoreData
 
+typealias DidDismiss = ()->()
+
 class NotebookTableViewController: UITableViewController {
     // MARK: - Properties
     
     var fetchResultController: NSFetchedResultsController<Notebook>!
+    var didDismiss: DidDismiss?
     
     // MARK: - Initialization
     
@@ -103,8 +106,9 @@ class NotebookTableViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "formCellReuse") as? NotebookFormCell ?? NotebookFormCell()
         
-        cell.textField.text = notebook.name
-        cell.isDefault.isOn = notebook.isDefault
+        cell.notebook = notebook
+        cell.delegate = self
+        cell.selectionStyle = .none
         
         return cell
     }
@@ -121,9 +125,20 @@ class NotebookTableViewController: UITableViewController {
         case .delete:
             let notebook = fetchResultController.object(at: indexPath)
             
-            let confirmDeleteAlertController = UIAlertController(title: "Remove Notebook", message: "Are you sure you would like to delete \"\(notebook.name!)\" from your library?", preferredStyle: UIAlertControllerStyle.actionSheet)
+            if (notebook.isDefault) {
+                let warningController = UIAlertController(title: "Remove Notebook", message: "You can not delete the default notebook", preferredStyle: .alert)
+                
+                let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                warningController.addAction(okAction)
+                
+                present(warningController, animated: true, completion: nil)
+                return
+            }
             
-            let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default, handler: { [weak self] (action: UIAlertAction) -> Void in
+            let confirmDeleteAlertController = UIAlertController(title: "Remove Notebook", message: "Are you sure you would like to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
+            
+            let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
                 viewMOC.delete(notebook)
                 do {
                     try viewMOC.save()
@@ -132,9 +147,7 @@ class NotebookTableViewController: UITableViewController {
                 }
             })
             
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { [weak self] (action: UIAlertAction) -> Void in
-                
-            })
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             
             confirmDeleteAlertController.addAction(deleteAction)
             confirmDeleteAlertController.addAction(cancelAction)
@@ -163,7 +176,10 @@ class NotebookTableViewController: UITableViewController {
 
 extension NotebookTableViewController {
     @objc func done() {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true) {
+            guard let done = self.didDismiss else { return }
+            done()
+        }
     }
     
     @objc func addNotebook() {
@@ -202,5 +218,36 @@ extension NotebookTableViewController {
 extension NotebookTableViewController : NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.reloadData()
+    }
+}
+
+// MARK: NotebookFormCellDelegate
+
+extension NotebookTableViewController : NotebookFormCellDelegate {
+    func notebookFormCell(_ uiViewCell: NotebookFormCell, didDefault: Notebook) {
+        if didDefault.isDefault {
+            return
+        }
+        
+        let confirmChangeDefaultController = UIAlertController(title: "Default notebook", message: "Are you sure you would like to mark \"\(didDefault.name!)\" as default notebook?", preferredStyle: .actionSheet)
+        
+        let makeDefaultAction = UIAlertAction(title: "Mark as default", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
+            
+            let current = self?.fetchResultController.fetchedObjects?.first { return $0.isDefault }
+            current?.isDefault = false
+            didDefault.isDefault = true
+            
+            do {
+                try current?.managedObjectContext?.save()
+                try didDefault.managedObjectContext?.save()
+            } catch { }
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        confirmChangeDefaultController.addAction(makeDefaultAction)
+        confirmChangeDefaultController.addAction(cancelAction)
+        
+        present(confirmChangeDefaultController, animated: true, completion: nil)
     }
 }

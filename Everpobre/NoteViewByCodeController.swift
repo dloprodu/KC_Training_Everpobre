@@ -177,9 +177,6 @@ class NoteViewByCodeController: UIViewController  {
         let moveViewGesture = UILongPressGestureRecognizer(target: self, action: #selector(userMoveImage))
         
         imageView.addGestureRecognizer(moveViewGesture)
-        
-        // Sync model
-        self.syncModelWithView()
     }
     
     override func viewDidLayoutSubviews() {
@@ -194,6 +191,8 @@ class NoteViewByCodeController: UIViewController  {
         super.viewWillAppear(animated)
         
         titleTextField.becomeFirstResponder()
+        // Sync model
+        self.syncModelWithView()
     }
     
     // MARK: - Helpers
@@ -202,7 +201,7 @@ class NoteViewByCodeController: UIViewController  {
         dateLabel.text = self.formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.note?.createdAtTI ?? 0)))
         // expirationDate.text =
         titleTextField.text = self.note?.title
-        noteTextView.text = self.note?.content
+        noteTextView.text = "\( (self.note?.notebook?.name ?? "") ) - \( (self.note?.content ?? "") )"
         
        // imageView
     }

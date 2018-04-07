@@ -9,6 +9,7 @@
 import Foundation
 
 extension Note {
+
     /*
     override public func setValue(_ value: Any?, forUndefinedKey key: String) {
         let keyToIgnore = ["date", "content"]

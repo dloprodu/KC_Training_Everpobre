@@ -27,13 +27,16 @@ class NoteTableViewController: UITableViewController {
     
     weak var delegate: NoteTableViewControllerDelegate?
     var fetchResultController: NSFetchedResultsController<Note>!
+    var lastSelectionRestored: Bool = false
+    var notes: [[Note]]
     
     // MARK: - Initialization
     
     init() {
-        super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
-        
+        notes = [[Note]]()
+        super.init(style: .grouped)
         title = "Notes"
+        tableView.allowsMultipleSelectionDuringEditing = false
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -60,16 +63,14 @@ class NoteTableViewController: UITableViewController {
         */
         
         // 3.- (Opcional) Queremos un orden? -> Añadir sort description.
-        let sortByNotebookDefault = NSSortDescriptor(key: "notebook.isDefault", ascending: true)
         let sortByNotebookName = NSSortDescriptor(key: "notebook.name", ascending: true)
         let sortByDate = NSSortDescriptor(key: "createdAtTI", ascending: true)
-        let sortByTittle = NSSortDescriptor(key: "title", ascending: true)
-        fetchRequest.sortDescriptors = [sortByNotebookDefault, sortByNotebookName, sortByDate, sortByTittle]
+        fetchRequest.sortDescriptors = [ sortByNotebookName, sortByDate ]
         
         // 4.- (Opcional) Filtrado.
-        let created24H = Date().timeIntervalSince1970 - 24*3600
-        let predicate = NSPredicate(format: "createdAtTI > %f", created24H)
-        fetchRequest.predicate = predicate
+        //let created24H = Date().timeIntervalSince1970 - 24*3600
+        //let predicate = NSPredicate(format: "createdAtTI > %f", created24H)
+        //fetchRequest.predicate = predicate
         
         // carga en memoria en paquetes de 25 (util para trabajar con listas muy grandes)
         fetchRequest.fetchBatchSize = 25
@@ -84,9 +85,12 @@ class NoteTableViewController: UITableViewController {
         
         self.fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewMOC, sectionNameKeyPath: "notebook.name", cacheName: nil)
         
-        try! fetchResultController.performFetch()
+        do {
+            try fetchResultController.performFetch()
+        } catch { }
         
         fetchResultController.delegate = self
+        loadNotes()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -103,28 +107,68 @@ class NoteTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return fetchResultController.sections?.count ?? 1
+        // return fetchResultController.sections?.count ?? 1
+        return notes.count
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return fetchResultController.sections?[section].name ?? "-"
+        // return fetchResultController.sections?[section].name ?? "-"
+        return notes[section][0].notebook?.name
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // return notes.count
-        return fetchResultController.sections?[section].numberOfObjects ?? 0
+        // return fetchResultController.sections?[section].numberOfObjects ?? 0
+        return notes[section].count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier") ??
             UITableViewCell(style: .default, reuseIdentifier: "reuseIdentifier")
 
-        // cell.textLabel?.text = notes[indexPath.row].title
-        cell.textLabel?.text = fetchResultController.object(at: indexPath).title
+        // cell.textLabel?.text = fetchResultController.object(at: indexPath).title
+        cell.textLabel?.text = notes[indexPath.section][indexPath.row].title
         
         return cell
     }
 
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        
+        let viewMOC = DataManager.shared.persistentContainer.viewContext
+        
+        switch editingStyle {
+        case .delete:
+            // let note = fetchResultController.object(at: indexPath)
+            let note = notes[indexPath.section][indexPath.row]
+            
+            let confirmDeleteAlertController = UIAlertController(title: "Remove note", message: "Are you sure you would like to delete \"\(note.title!)\" from your library?", preferredStyle: .actionSheet)
+            
+            let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
+                viewMOC.delete(note)
+                do {
+                    try viewMOC.save()
+                } catch {
+                    
+                }
+            })
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            
+            confirmDeleteAlertController.addAction(deleteAction)
+            confirmDeleteAlertController.addAction(cancelAction)
+            
+            present(confirmDeleteAlertController, animated: true, completion: nil)
+            break
+        case .none:
+            break
+        case .insert:
+            break
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let note = fetchResultController.object(at: indexPath)
         let collapsed = splitViewController?.isCollapsed ?? true
@@ -147,10 +191,25 @@ class NoteTableViewController: UITableViewController {
     
     // MARk: - Helpers
     
+    // This method help us to set in first position the default notebook and the rest of notebooks in alphabetical order
+    func loadNotes() {
+        var list = fetchResultController.fetchedObjects ?? []
+        list.sort { (a: Note, b: Note) -> Bool in
+            if a.notebook?.isDefault == b.notebook?.isDefault {
+                return (a.title ?? "") < (b.title ?? "")
+            }
+            
+            if a.notebook?.isDefault ?? false {
+                return true
+            }
+            
+            return false
+        }
+        notes = list.group { $0.notebook?.name ?? "" }
+        tableView.reloadData()
+    }
+    
     func setupUI() {
-        // Add Note button
-        // navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewNote))
-        
         // Managage notebooks button
         navigationController?.isToolbarHidden = false
         
@@ -162,14 +221,30 @@ class NoteTableViewController: UITableViewController {
     }
     
     func restoreLastSelection() {
-        // Select last note selected
-        /* TODO
-        if (fetchResultController.fetchedObjects?.count == 0) {
+        if lastSelectionRestored {
             return
         }
         
-        let section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
-        let row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
+        lastSelectionRestored = true
+        
+        if (self.tableView.numberOfSections == 0) {
+            return
+        }
+        
+        var section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
+        if (section >= self.tableView.numberOfSections) {
+            section = 0
+        }
+        
+        if (self.tableView.numberOfRows(inSection: section) == 0) {
+            return
+        }
+        
+        var row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
+        if (row >= self.tableView.numberOfRows(inSection: section)) {
+            row = 0
+        }
+        
         let indexPath = IndexPath(item: row, section: section)
         
         self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
@@ -180,7 +255,6 @@ class NoteTableViewController: UITableViewController {
         if !collapsed {
             delegate?.noteTableViewController(self, didSelectNote: note)
         }
-        */
     }
 }
 
@@ -208,9 +282,7 @@ extension NoteTableViewController {
             
             do {
                 try privateMOC.save()
-            } catch {
-                
-            }
+            } catch { }
             
             // Ya no es necesario con NSFetchedController
             //DispatchQueue.main.async {
@@ -223,9 +295,21 @@ extension NoteTableViewController {
     }
     
     @objc func showNotebooks() {
-        let navVC = NotebookTableViewController().wrappedInNavigation()
+        let notebookVC = NotebookTableViewController()
+        notebookVC.didDismiss = {
+            do {
+                try self.fetchResultController.performFetch()
+            } catch { }
+            
+            self.loadNotes()
+        }
+        
+        let navVC = notebookVC.wrappedInNavigation()
         navVC.modalPresentationStyle = .overCurrentContext
-        self.present(navVC, animated: true) {}
+        
+        self.present(navVC, animated: true) {
+            print("completed")
+        }
     }
 }
 
@@ -233,7 +317,7 @@ extension NoteTableViewController {
 
 extension NoteTableViewController : NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.tableView.reloadData()
+        self.loadNotes()
     }
 }
 

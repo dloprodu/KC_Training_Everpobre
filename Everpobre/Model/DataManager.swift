@@ -14,12 +14,6 @@ class DataManager: NSObject {
     
     static let shared = DataManager()
     
-    private var _defaultNotebook: Notebook?
-    
-    var defaultNotebook: Notebook? {
-        return _defaultNotebook
-    }
-    
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Everpobre")
         container.loadPersistentStores { (storeDescription: NSPersistentStoreDescription, error: Error?) in
@@ -52,22 +46,18 @@ class DataManager: NSObject {
         }
         
         if (notebooks.count > 0) {
-            self._defaultNotebook = notebooks[0]
             return
         }
         
         let privateMOC = DataManager.shared.persistentContainer.newBackgroundContext()
         
         privateMOC.perform {
-            self._defaultNotebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: privateMOC) as? Notebook
+            let defaultNotebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: privateMOC) as? Notebook
             
-            let dic: [String:Any] = [
-                "isDefault": true,
-                "name": "My notebook",
-                "createdAtTI": Date().timeIntervalSince1970
-            ]
-            
-            self._defaultNotebook?.setValuesForKeys(dic)
+            defaultNotebook?.isDefault = true
+            defaultNotebook?.name = "My notebook"
+            defaultNotebook?.createdAtTI = Date().timeIntervalSince1970
+            // defaultNotebook?.setValuesForKeys(dic)
             
             do {
                 try privateMOC.save()
@@ -81,8 +71,9 @@ class DataManager: NSObject {
         let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
         fetchRequest.entity = NSEntityDescription.entity(forEntityName: "Notebook", in: moc)
         
-        let sortByDate = NSSortDescriptor(key: "createdAtTI", ascending: true)
-        fetchRequest.sortDescriptors = [sortByDate]
+        let predicate = NSPredicate(format: "isDefault == %@", NSNumber(value: true))
+        fetchRequest.predicate = predicate
+        
         fetchRequest.fetchLimit = 1
         fetchRequest.fetchBatchSize = 5
         
@@ -93,7 +84,7 @@ class DataManager: NSObject {
         } catch {
             print(error)
         }
-        
+
         return notebooks.count > 0 ? notebooks[0] : nil
     }
 }
