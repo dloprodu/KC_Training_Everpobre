@@ -51,7 +51,7 @@ class NotebookTableViewController: UITableViewController {
          */
         
         // 3.- (Opcional) Queremos un orden? -> Añadir sort description.
-        let sortByNotebookDefault = NSSortDescriptor(key: "isDefault", ascending: true)
+        let sortByNotebookDefault = NSSortDescriptor(key: "isDefault", ascending: false)
         let sortByNotebookName = NSSortDescriptor(key: "name", ascending: true)
         fetchRequest.sortDescriptors = [sortByNotebookDefault, sortByNotebookName]
         
@@ -113,6 +113,41 @@ class NotebookTableViewController: UITableViewController {
         
     }
     
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        
+        let viewMOC = DataManager.shared.persistentContainer.viewContext
+
+        switch editingStyle {
+        case .delete:
+            let notebook = fetchResultController.object(at: indexPath)
+            
+            let confirmDeleteAlertController = UIAlertController(title: "Remove Notebook", message: "Are you sure you would like to delete \"\(notebook.name!)\" from your library?", preferredStyle: UIAlertControllerStyle.actionSheet)
+            
+            let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default, handler: { [weak self] (action: UIAlertAction) -> Void in
+                viewMOC.delete(notebook)
+                do {
+                    try viewMOC.save()
+                } catch {
+                    
+                }
+            })
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { [weak self] (action: UIAlertAction) -> Void in
+                
+            })
+            
+            confirmDeleteAlertController.addAction(deleteAction)
+            confirmDeleteAlertController.addAction(cancelAction)
+            
+            present(confirmDeleteAlertController, animated: true, completion: nil)
+            break
+        case .none:
+            break
+        case .insert:
+            break
+        }
+    }
+    
     // MARK: - Helpers
     
     func setupUI() {
@@ -132,7 +167,21 @@ extension NotebookTableViewController {
     }
     
     @objc func addNotebook() {
+        let privateMOC = DataManager.shared.persistentContainer.newBackgroundContext()
         
+        privateMOC.perform {
+            let notebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: privateMOC) as! Notebook
+            
+            notebook.name = "New notebook \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1  )"
+            notebook.createdAtTI = Date().timeIntervalSince1970
+            notebook.isDefault = false
+            
+            do {
+                try privateMOC.save()
+            } catch {
+                
+            }
+        }
     }
     
     @objc func editTable() {
