@@ -15,7 +15,6 @@ protocol NotebookFormCellDelegate: class {
 
 class NotebookFormCell: UITableViewCell {
 
-    let format: DateFormatter
     weak var delegate: NotebookFormCellDelegate?
     
     var notebook: Notebook? {
@@ -41,15 +40,11 @@ class NotebookFormCell: UITableViewCell {
     @IBOutlet weak var defaultButton: BorderButton!
     
     init() {
-        format = DateFormatter()
-        format.dateFormat = "yyyy-MM-dd HH:mm:ss"
         delegate = nil
         super.init(style: .default, reuseIdentifier: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
-        format = DateFormatter()
-        format.dateFormat = "yyyy-MM-dd HH:mm:ss"
         delegate = nil
         super.init(coder: aDecoder)
     }
@@ -75,33 +70,14 @@ class NotebookFormCell: UITableViewCell {
 
 extension NotebookFormCell: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if (self.notebook?.name == textField.text) {
+        guard let notebook = self.notebook else {
             return
         }
         
-        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
-        let newName = textField.text
-        
-        backMOC.perform {
-            guard let notebook = self.notebook else {
-                return
-            }
-            
-            // Me traigo note, del Store a este hilo privado.
-            let backNotebook = backMOC.object(with: notebook.objectID) as! Notebook
-            
-            if newName?.isEmpty ?? true {
-                let date = Date(timeIntervalSince1970: backNotebook.createdAtTI)
-                backNotebook.name = self.format.string(from: date)
-            } else {
-                backNotebook.name = newName
-            }
-            
-            do {
-                try backNotebook.managedObjectContext?.save()
-            } catch {
-                print(error)
-            }
+        guard let name = textField.text else {
+            return
         }
+        
+        notebook.update(name: name)
     }
 }

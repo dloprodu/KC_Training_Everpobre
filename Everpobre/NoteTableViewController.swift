@@ -127,6 +127,7 @@ class NoteTableViewController: UITableViewController {
 
         // cell.textLabel?.text = fetchResultController.object(at: indexPath).title
         cell.textLabel?.text = notes[indexPath.section][indexPath.row].title
+        //cell.accessoryType = .disclosureIndicator
         
         return cell
     }
@@ -143,17 +144,8 @@ class NoteTableViewController: UITableViewController {
             
             let confirmDeleteAlertController = UIAlertController(title: "Remove note", message: "Are you sure you would like to delete \"\(note.title!)\" from your library?", preferredStyle: .actionSheet)
             
-            let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
-                
-                let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
-                backMOC.perform {
-                    let backNote = backMOC.object(with: note.objectID) as! Note
-
-                    backMOC.delete(backNote)
-                    do {
-                        try backMOC.save()
-                    } catch { }
-                }
+            let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { (action: UIAlertAction) -> Void in
+                Note.delete(note)
             })
             
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -264,36 +256,7 @@ class NoteTableViewController: UITableViewController {
 
 extension NoteTableViewController {
     @objc func addNewNote() {
-        let privateMOC = DataManager.shared.persistentContainer.newBackgroundContext()
-        
-        privateMOC.perform {
-            let note = NSEntityDescription.insertNewObject(forEntityName: "Note", into: privateMOC) as! Note
-            
-            let dic: [String:Any] = [
-                "title": "New note \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1 )",
-                "createdAtTI": Date().timeIntervalSince1970,
-                "content": "Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda."
-            ]
-            
-            //note.title = "New Note"
-            //note.createdAtTI = Date().timeIntervalSince1970
-            note.setValuesForKeys(dic)
-            if let defaultNotebook = DataManager.shared.getDefaultNotebook(in: privateMOC) {
-                note.notebook = defaultNotebook
-            }
-            
-            do {
-                try privateMOC.save()
-            } catch { }
-            
-            // Ya no es necesario con NSFetchedController
-            //DispatchQueue.main.async {
-            //    let viewNote = DataManager.shared.persistentContainer.viewContext.object(with: note.objectID) as! Note
-            
-            //    self.notes.append(viewNote)
-            //    self.tableView.reloadData()
-            //}
-        }
+        Note.create(title: "New note \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1 )")
     }
     
     @objc func showNotebooks() {
@@ -309,9 +272,7 @@ extension NoteTableViewController {
         let navVC = notebookVC.wrappedInNavigation()
         navVC.modalPresentationStyle = .overCurrentContext
         
-        self.present(navVC, animated: true) {
-            print("completed")
-        }
+        self.present(navVC, animated: true) { }
     }
 }
 

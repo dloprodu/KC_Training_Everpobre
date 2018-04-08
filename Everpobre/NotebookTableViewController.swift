@@ -61,14 +61,6 @@ class NotebookTableViewController: UITableViewController {
         // carga en memoria en paquetes de 25 (util para trabajar con listas muy grandes)
         fetchRequest.fetchBatchSize = 25
         
-        // No es necesario con NSFetchedController
-        // 5.- Ejecutar request.
-        // do {
-        //   try notes = viewMOC.fetch(fetchRequest)
-        // } catch {
-        //    print(error)
-        // }
-        
         self.fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewMOC, sectionNameKeyPath: nil, cacheName: nil)
         
         try! fetchResultController.performFetch()
@@ -97,7 +89,6 @@ class NotebookTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // return notes.count
         return fetchResultController.sections?[section].numberOfObjects ?? 0
     }
     
@@ -175,8 +166,8 @@ class NotebookTableViewController: UITableViewController {
     func selectDeleteOption(_ notebook: Notebook) {
         let selectDeleteModeController = UIAlertController(title: "Remove Notebook", message: "How do you want to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
         
-        let deleteAllAction = UIAlertAction(title: "Delete all notes", style: .destructive, handler: { [weak self] (action: UIAlertAction) -> Void in
-            self?.deleteNotebook(notebook, target: nil)
+        let deleteAllAction = UIAlertAction(title: "Delete all notes", style: .destructive, handler: {(action: UIAlertAction) -> Void in
+            Notebook.delete(notebook, target: nil)
         })
         let moveNotesAction = UIAlertAction(title: "Move notes to another notebook", style: .destructive, handler: { [weak self] (action: UIAlertAction) -> Void in
             
@@ -187,8 +178,8 @@ class NotebookTableViewController: UITableViewController {
                     return
                 }
                 
-                selectNotebookController.addAction(UIAlertAction(title: el.name, style: .default, handler: {[weak self] (action: UIAlertAction) -> Void in
-                    self?.deleteNotebook(notebook, target: el)
+                selectNotebookController.addAction(UIAlertAction(title: el.name, style: .default, handler: {(action: UIAlertAction) -> Void in
+                    Notebook.delete(notebook, target: el)
                 }))
             })
             
@@ -206,25 +197,6 @@ class NotebookTableViewController: UITableViewController {
         
         self.present(selectDeleteModeController, animated: true, completion: nil)
     }
-    
-    func deleteNotebook(_ notebook: Notebook, target: Notebook?) {
-        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
-        
-        backMOC.perform {
-            let backNotebookToDelete = backMOC.object(with: notebook.objectID) as! Notebook
-            
-            if let t = target {
-                let backNotebookTarget = backMOC.object(with: t.objectID) as! Notebook
-                backNotebookToDelete.notes?.forEach { ( $0 as? Note)?.notebook = backNotebookTarget }
-            }
-            
-            backMOC.delete(backNotebookToDelete)
-            
-            do {
-                try backMOC.save()
-            } catch { }
-        }
-    }
 }
 
 // MARK: Toolbar Buttons actions
@@ -238,19 +210,7 @@ extension NotebookTableViewController {
     }
 
     @objc func addNotebook() {
-        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
-        
-        backMOC.perform {
-            let notebook = NSEntityDescription.insertNewObject(forEntityName: "Notebook", into: backMOC) as! Notebook
-            
-            notebook.name = "New notebook \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1  )"
-            notebook.createdAtTI = Date().timeIntervalSince1970
-            notebook.isDefault = false
-            
-            do {
-                try backMOC.save()
-            } catch { }
-        }
+        Notebook.create(name: "New notebook \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1  )")
     }
     
     @objc func editTable() {
@@ -284,24 +244,9 @@ extension NotebookTableViewController : NotebookFormCellDelegate {
         
         let confirmChangeDefaultController = UIAlertController(title: "Default notebook", message: "Are you sure you would like to mark \"\(didDefault.name!)\" as default notebook?", preferredStyle: .actionSheet)
         
-        let makeDefaultAction = UIAlertAction(title: "Mark as default", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
+        let makeDefaultAction = UIAlertAction(title: "Mark as default", style: .default, handler: { (action: UIAlertAction) -> Void in
             
-            let current = self?.fetchResultController.fetchedObjects?.first { return $0.isDefault }
-            guard let currentDefault = current else { return }
-            let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
-            
-            backMOC.perform {
-                // Me traigo note, del Store a este hilo privado.
-                let backCurentDefault = backMOC.object(with: currentDefault.objectID) as! Notebook
-                let backNewDefault = backMOC.object(with: didDefault.objectID) as! Notebook
-                
-                backCurentDefault.isDefault = false
-                backNewDefault.isDefault = true
-                
-                do {
-                    try backMOC.save()
-                } catch { }
-            }
+            Notebook.makeDefault(didDefault)
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
