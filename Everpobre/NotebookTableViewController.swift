@@ -194,9 +194,7 @@ extension NotebookTableViewController {
             
             do {
                 try privateMOC.save()
-            } catch {
-                
-            }
+            } catch { }
         }
     }
     
@@ -238,7 +236,6 @@ extension NotebookTableViewController : NotebookFormCellDelegate {
             didDefault.isDefault = true
             
             do {
-                try current?.managedObjectContext?.save()
                 try didDefault.managedObjectContext?.save()
             } catch { }
         })

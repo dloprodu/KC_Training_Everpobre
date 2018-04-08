@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol NotebookFormCellDelegate: class {
     func notebookFormCell(_ uiViewCell: NotebookFormCell, didDefault: Notebook)
@@ -24,8 +25,10 @@ class NotebookFormCell: UITableViewCell {
             }
             
             textField.text = model.name
-
-            self.defaultButton.backgroundColor = model.isDefault ? UIColor.green : UIColor.clear
+            
+            self.defaultButton.backgroundColor = model.isDefault
+                ? UIColor(red: 30.0/255.0, green: 144.0/255.0, blue: 255.0/255.0, alpha: 1)
+                : UIColor.clear
         }
     }
     
@@ -72,6 +75,9 @@ class NotebookFormCell: UITableViewCell {
 
 extension NotebookFormCell: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
+        if (self.notebook?.name == textField.text) {
+            return
+        }
         
         if textField.text?.isEmpty ?? true {
             let date = Date(timeIntervalSince1970: notebook?.createdAtTI ?? 0)
