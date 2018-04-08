@@ -136,9 +136,6 @@ class NoteTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        
-        let viewMOC = DataManager.shared.persistentContainer.viewContext
-        
         switch editingStyle {
         case .delete:
             // let note = fetchResultController.object(at: indexPath)
@@ -147,11 +144,15 @@ class NoteTableViewController: UITableViewController {
             let confirmDeleteAlertController = UIAlertController(title: "Remove note", message: "Are you sure you would like to delete \"\(note.title!)\" from your library?", preferredStyle: .actionSheet)
             
             let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
-                viewMOC.delete(note)
-                do {
-                    try viewMOC.save()
-                } catch {
-                    
+                
+                let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
+                backMOC.perform {
+                    let backNote = backMOC.object(with: note.objectID) as! Note
+
+                    backMOC.delete(backNote)
+                    do {
+                        try backMOC.save()
+                    } catch { }
                 }
             })
             

@@ -79,17 +79,29 @@ extension NotebookFormCell: UITextFieldDelegate {
             return
         }
         
-        if textField.text?.isEmpty ?? true {
-            let date = Date(timeIntervalSince1970: notebook?.createdAtTI ?? 0)
-            notebook?.name = format.string(from: date)
-        } else {
-            notebook?.name = textField.text
-        }
+        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
+        let newName = textField.text
         
-        do {
-            try notebook?.managedObjectContext?.save()
-        } catch {
-            print(error)
+        backMOC.perform {
+            guard let notebook = self.notebook else {
+                return
+            }
+            
+            // Me traigo note, del Store a este hilo privado.
+            let backNotebook = backMOC.object(with: notebook.objectID) as! Notebook
+            
+            if newName?.isEmpty ?? true {
+                let date = Date(timeIntervalSince1970: backNotebook.createdAtTI)
+                backNotebook.name = self.format.string(from: date)
+            } else {
+                backNotebook.name = newName
+            }
+            
+            do {
+                try backNotebook.managedObjectContext?.save()
+            } catch {
+                print(error)
+            }
         }
     }
 }
