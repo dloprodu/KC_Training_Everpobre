@@ -11,7 +11,7 @@ import CoreData
 
 extension Note {
     
-    static func create(title: String?) {
+    static func create(target: Notebook?, title: String?) {
         let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
         
         backMOC.perform {
@@ -26,8 +26,10 @@ extension Note {
             //note.title = "New Note"
             //note.createdAtTI = Date().timeIntervalSince1970
             note.setValuesForKeys(dic)
-            if let defaultNotebook = Notebook.getDefault(in: backMOC) {
-                note.notebook = defaultNotebook
+            if let target = target {
+                note.notebook = backMOC.object(with: target.objectID) as? Notebook
+            } else {
+                note.notebook = Notebook.getDefault(in: backMOC)
             }
             
             do {

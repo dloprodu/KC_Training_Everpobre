@@ -204,14 +204,21 @@ class NoteTableViewController: UITableViewController {
     }
     
     func setupUI() {
-        // Managage notebooks button
         navigationController?.isToolbarHidden = false
         
-        let addNoteButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewNote))
+        let button = UIButton(type: .custom)
+        button.setTitle("Add note", for: .normal)
+        button.setTitleColor(view.tintColor, for: .normal)
+        
+        let addNoteButton = UIBarButtonItem(customView: button)
         let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let notebookButton = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(showNotebooks))
         
         self.setToolbarItems([addNoteButton, flexible, notebookButton], animated: false)
+        
+        // Gestures
+        addNoteButton.customView?.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(selectNotebook)))
+        addNoteButton.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(addNewNote)))
     }
     
     func restoreLastSelection() {
@@ -255,8 +262,12 @@ class NoteTableViewController: UITableViewController {
 // MARK: Toolbar Buttons actions
 
 extension NoteTableViewController {
+    var newNoteTitle: String {
+        return "New note \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1 )"
+    }
+    
     @objc func addNewNote() {
-        Note.create(title: "New note \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1 )")
+        Note.create(target: nil, title: newNoteTitle)
     }
     
     @objc func showNotebooks() {
@@ -273,6 +284,23 @@ extension NoteTableViewController {
         navVC.modalPresentationStyle = .overCurrentContext
         
         self.present(navVC, animated: true) { }
+    }
+    
+    @objc func selectNotebook() {
+        let notebooks = Notebook.getAll(in: DataManager.shared.persistentContainer.viewContext)
+        
+        let selectNotebookController = UIAlertController(title: "Select Notebook", message: "Select target notebook", preferredStyle: .actionSheet)
+        
+        notebooks.forEach({ (el) in
+            selectNotebookController.addAction(UIAlertAction(title: el.name, style: .default, handler: {(action: UIAlertAction) -> Void in
+                Note.create(target: el, title: self.newNoteTitle)
+            }))
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        selectNotebookController.addAction(cancelAction)
+        
+        self.present(selectNotebookController, animated: true, completion: nil)
     }
 }
 

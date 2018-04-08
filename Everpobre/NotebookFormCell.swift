@@ -24,6 +24,7 @@ class NotebookFormCell: UITableViewCell {
             }
             
             textField.text = model.name
+            numberOfNodesLabel.text = String(format: "%03d", model.notes?.count ?? 0)
             
             self.defaultButton.backgroundColor = model.isDefault
                 ? UIColor(red: 30.0/255.0, green: 144.0/255.0, blue: 255.0/255.0, alpha: 1)
@@ -38,6 +39,7 @@ class NotebookFormCell: UITableViewCell {
     }
     
     @IBOutlet weak var defaultButton: BorderButton!
+    @IBOutlet weak var numberOfNodesLabel: UILabel!
     
     init() {
         delegate = nil

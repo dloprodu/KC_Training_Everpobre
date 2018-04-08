@@ -72,6 +72,27 @@ extension Notebook {
         return notebooks.count > 0 ? notebooks[0] : nil
     }
     
+    static func getAll(in moc: NSManagedObjectContext) -> [Notebook] {
+        let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
+        fetchRequest.entity = NSEntityDescription.entity(forEntityName: "Notebook", in: moc)
+        
+        let sortByNotebookDefault = NSSortDescriptor(key: "isDefault", ascending: false)
+        let sortByNotebookName = NSSortDescriptor(key: "name", ascending: true)
+        fetchRequest.sortDescriptors = [sortByNotebookDefault, sortByNotebookName]
+        
+        fetchRequest.fetchBatchSize = 50
+        
+        var notebooks: [Notebook] = []
+        
+        do {
+            try notebooks = moc.fetch(fetchRequest)
+        } catch {
+            print(error)
+        }
+        
+        return notebooks
+    }
+    
     static func create(name: String?) {
         let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
         
