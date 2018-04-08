@@ -170,7 +170,8 @@ class NoteTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let note = fetchResultController.object(at: indexPath)
+        //let note = fetchResultController.object(at: indexPath)
+        let note = notes[indexPath.section][indexPath.row]
         let collapsed = splitViewController?.isCollapsed ?? true
         
         if collapsed {

@@ -119,40 +119,16 @@ class NotebookTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         
-        let viewMOC = DataManager.shared.persistentContainer.viewContext
-
         switch editingStyle {
         case .delete:
             let notebook = fetchResultController.object(at: indexPath)
             
             if (notebook.isDefault) {
-                let warningController = UIAlertController(title: "Remove Notebook", message: "You can not delete the default notebook", preferredStyle: .alert)
-                
-                let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
-                
-                warningController.addAction(okAction)
-                
-                present(warningController, animated: true, completion: nil)
+                self.showNotAllowedToDeleteDefaultAlert()
                 return
             }
             
-            let confirmDeleteAlertController = UIAlertController(title: "Remove Notebook", message: "Are you sure you would like to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
-            
-            let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
-                viewMOC.delete(notebook)
-                do {
-                    try viewMOC.save()
-                } catch {
-                    
-                }
-            })
-            
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            
-            confirmDeleteAlertController.addAction(deleteAction)
-            confirmDeleteAlertController.addAction(cancelAction)
-            
-            present(confirmDeleteAlertController, animated: true, completion: nil)
+            self.confirmDeleteAction(notebook)
             break
         case .none:
             break
@@ -170,6 +146,82 @@ class NotebookTableViewController: UITableViewController {
             UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editTable))
         ]
     }
+    
+    func showNotAllowedToDeleteDefaultAlert() {
+        let warningController = UIAlertController(title: "Remove Notebook", message: "You can not delete the default notebook", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+        
+        warningController.addAction(okAction)
+        
+        present(warningController, animated: true, completion: nil)
+    }
+    
+    func confirmDeleteAction(_ notebook: Notebook) {
+        
+        let confirmDeleteAlertController = UIAlertController(title: "Remove Notebook", message: "Are you sure you would like to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
+        
+        let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
+            self?.selectDeleteOption(notebook)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        confirmDeleteAlertController.addAction(deleteAction)
+        confirmDeleteAlertController.addAction(cancelAction)
+        
+        present(confirmDeleteAlertController, animated: true, completion: nil)
+    }
+    
+    func selectDeleteOption(_ notebook: Notebook) {
+        
+        let deleteNotebook = {(target: Notebook?) in
+            let viewMOC = DataManager.shared.persistentContainer.viewContext
+            
+            if let t = target {
+                notebook.notes?.forEach { ( $0 as? Note)?.notebook = t }
+            }
+            
+            viewMOC.delete(notebook)
+            
+            do {
+                try viewMOC.save()
+            } catch { }
+        }
+        
+        let selectDeleteModeController = UIAlertController(title: "Remove Notebook", message: "How do you want to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
+        
+        let deleteAllAction = UIAlertAction(title: "Delete all notes", style: .destructive, handler: { [weak self] (action: UIAlertAction) -> Void in
+            deleteNotebook(nil)
+        })
+        let moveNotesAction = UIAlertAction(title: "Move notes to another notebook", style: .destructive, handler: { [weak self] (action: UIAlertAction) -> Void in
+            
+            let selectNotebookController = UIAlertController(title: "Select Notebook", message: "Select target notebook", preferredStyle: .actionSheet)
+            
+            self?.fetchResultController.fetchedObjects?.forEach({ (el) in
+                if el.objectID == notebook.objectID {
+                    return
+                }
+                
+                selectNotebookController.addAction(UIAlertAction(title: el.name, style: .default, handler: {[weak self] (action: UIAlertAction) -> Void in
+                    deleteNotebook(el)
+                }))
+            })
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            selectNotebookController.addAction(cancelAction)
+            
+            self?.present(selectNotebookController, animated: true, completion: nil)
+            
+        })
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        selectDeleteModeController.addAction(deleteAllAction)
+        selectDeleteModeController.addAction(moveNotesAction)
+        selectDeleteModeController.addAction(cancelAction)
+        
+        self.present(selectDeleteModeController, animated: true, completion: nil)
+    }
 }
 
 // MARK: Toolbar Buttons actions
@@ -181,7 +233,7 @@ extension NotebookTableViewController {
             done()
         }
     }
-    
+
     @objc func addNotebook() {
         let privateMOC = DataManager.shared.persistentContainer.newBackgroundContext()
         
