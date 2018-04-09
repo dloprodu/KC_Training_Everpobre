@@ -139,17 +139,17 @@ class NotebookTableViewController: UITableViewController {
     }
     
     func showNotAllowedToDeleteDefaultAlert() {
-        let warningController = UIAlertController(title: "Remove Notebook", message: "You can not delete the default notebook", preferredStyle: .alert)
+        let warning = UIAlertController(title: "Remove Notebook", message: "You can not delete the default notebook", preferredStyle: .alert)
         
         let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
         
-        warningController.addAction(okAction)
+        warning.addAction(okAction)
         
-        present(warningController, animated: true, completion: nil)
+        present(warning, animated: true, completion: nil)
     }
     
     func confirmDeleteAction(_ notebook: Notebook) {
-        let confirmDeleteAlertController = UIAlertController(title: "Remove Notebook", message: "Are you sure you would like to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
+        let confirmDelete = UIAlertController(title: "Remove Notebook", message: "Are you sure you would like to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
         
         let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { [weak self] (action: UIAlertAction) -> Void in
             self?.selectDeleteOption(notebook)
@@ -157,45 +157,55 @@ class NotebookTableViewController: UITableViewController {
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        confirmDeleteAlertController.addAction(deleteAction)
-        confirmDeleteAlertController.addAction(cancelAction)
+        confirmDelete.addAction(deleteAction)
+        confirmDelete.addAction(cancelAction)
         
-        present(confirmDeleteAlertController, animated: true, completion: nil)
+        confirmDelete.prepareForIPAD(source: self.view, bartButtonItem: nil, direction: .init(rawValue: 0))
+        
+        present(confirmDelete, animated: true, completion: nil)
     }
     
     func selectDeleteOption(_ notebook: Notebook) {
-        let selectDeleteModeController = UIAlertController(title: "Remove Notebook", message: "How do you want to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
+        if (notebook.notes?.count == 0) {
+            Notebook.delete(notebook, target: nil)
+            return
+        }
+        
+        let selectDeleteMode = UIAlertController(title: "Remove Notebook", message: "How do you want to delete \"\(notebook.name!)\" from your library?", preferredStyle: .actionSheet)
         
         let deleteAllAction = UIAlertAction(title: "Delete all notes", style: .destructive, handler: {(action: UIAlertAction) -> Void in
             Notebook.delete(notebook, target: nil)
         })
         let moveNotesAction = UIAlertAction(title: "Move notes to another notebook", style: .destructive, handler: { [weak self] (action: UIAlertAction) -> Void in
             
-            let selectNotebookController = UIAlertController(title: "Select Notebook", message: "Select target notebook", preferredStyle: .actionSheet)
+            let selectNotebook = UIAlertController(title: "Select Notebook", message: "Select target notebook", preferredStyle: .actionSheet)
             
             self?.fetchResultController.fetchedObjects?.forEach({ (el) in
                 if el.objectID == notebook.objectID {
                     return
                 }
                 
-                selectNotebookController.addAction(UIAlertAction(title: el.name, style: .default, handler: {(action: UIAlertAction) -> Void in
+                selectNotebook.addAction(UIAlertAction(title: el.name, style: .default, handler: {(action: UIAlertAction) -> Void in
                     Notebook.delete(notebook, target: el)
                 }))
             })
             
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            selectNotebookController.addAction(cancelAction)
+            selectNotebook.addAction(cancelAction)
             
-            self?.present(selectNotebookController, animated: true, completion: nil)
+            selectNotebook.prepareForIPAD(source: self!.view, bartButtonItem: nil, direction: .init(rawValue: 0))
             
+            self?.present(selectNotebook, animated: true, completion: nil)
         })
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        selectDeleteModeController.addAction(deleteAllAction)
-        selectDeleteModeController.addAction(moveNotesAction)
-        selectDeleteModeController.addAction(cancelAction)
+        selectDeleteMode.addAction(deleteAllAction)
+        selectDeleteMode.addAction(moveNotesAction)
+        selectDeleteMode.addAction(cancelAction)
         
-        self.present(selectDeleteModeController, animated: true, completion: nil)
+        selectDeleteMode.prepareForIPAD(source: self.view, bartButtonItem: nil, direction: .init(rawValue: 0))
+        
+        self.present(selectDeleteMode, animated: true, completion: nil)
     }
 }
 
@@ -242,7 +252,7 @@ extension NotebookTableViewController : NotebookFormCellDelegate {
             return
         }
         
-        let confirmChangeDefaultController = UIAlertController(title: "Default notebook", message: "Are you sure you would like to mark \"\(didDefault.name!)\" as default notebook?", preferredStyle: .actionSheet)
+        let confirmChangeDefault = UIAlertController(title: "Default notebook", message: "Are you sure you would like to mark \"\(didDefault.name!)\" as default notebook?", preferredStyle: .actionSheet)
         
         let makeDefaultAction = UIAlertAction(title: "Mark as default", style: .default, handler: { (action: UIAlertAction) -> Void in
             
@@ -251,9 +261,11 @@ extension NotebookTableViewController : NotebookFormCellDelegate {
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        confirmChangeDefaultController.addAction(makeDefaultAction)
-        confirmChangeDefaultController.addAction(cancelAction)
+        confirmChangeDefault.addAction(makeDefaultAction)
+        confirmChangeDefault.addAction(cancelAction)
         
-        present(confirmChangeDefaultController, animated: true, completion: nil)
+        confirmChangeDefault.prepareForIPAD(source: self.view, bartButtonItem: nil, direction: .init(rawValue: 0))
+        
+        present(confirmChangeDefault, animated: true, completion: nil)
     }
 }

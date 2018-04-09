@@ -142,7 +142,7 @@ class NoteTableViewController: UITableViewController {
             // let note = fetchResultController.object(at: indexPath)
             let note = notes[indexPath.section][indexPath.row]
             
-            let confirmDeleteAlertController = UIAlertController(title: "Remove note", message: "Are you sure you would like to delete \"\(note.title!)\" from your library?", preferredStyle: .actionSheet)
+            let confirmDelete = UIAlertController(title: "Remove note", message: "Are you sure you would like to delete \"\(note.title!)\" from your library?", preferredStyle: .actionSheet)
             
             let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { (action: UIAlertAction) -> Void in
                 Note.delete(note)
@@ -150,10 +150,12 @@ class NoteTableViewController: UITableViewController {
             
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             
-            confirmDeleteAlertController.addAction(deleteAction)
-            confirmDeleteAlertController.addAction(cancelAction)
+            confirmDelete.addAction(deleteAction)
+            confirmDelete.addAction(cancelAction)
             
-            present(confirmDeleteAlertController, animated: true, completion: nil)
+            confirmDelete.prepareForIPAD(source: self.view, bartButtonItem: nil, direction: .init(rawValue: 0))
+            
+            present(confirmDelete, animated: true, completion: nil)
             break
         case .none:
             break
@@ -289,18 +291,20 @@ extension NoteTableViewController {
     @objc func selectNotebook() {
         let notebooks = Notebook.getAll(in: DataManager.shared.persistentContainer.viewContext)
         
-        let selectNotebookController = UIAlertController(title: "Select Notebook", message: "Select target notebook", preferredStyle: .actionSheet)
+        let selectNotebook = UIAlertController(title: "Select Notebook", message: "Select target notebook", preferredStyle: .actionSheet)
         
         notebooks.forEach({ (el) in
-            selectNotebookController.addAction(UIAlertAction(title: el.name, style: .default, handler: {(action: UIAlertAction) -> Void in
+            selectNotebook.addAction(UIAlertAction(title: el.name, style: .default, handler: {(action: UIAlertAction) -> Void in
                 Note.create(target: el, title: self.newNoteTitle)
             }))
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        selectNotebookController.addAction(cancelAction)
+        selectNotebook.addAction(cancelAction)
         
-        self.present(selectNotebookController, animated: true, completion: nil)
+        selectNotebook.prepareForIPAD(source: self.view, bartButtonItem: self.toolbarItems?.first, direction: .down)
+        
+        self.present(selectNotebook, animated: true, completion: nil)
     }
 }
 
