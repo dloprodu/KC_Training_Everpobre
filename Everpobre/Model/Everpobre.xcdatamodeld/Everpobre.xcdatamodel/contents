@@ -3,8 +3,12 @@
     <entity name="Note" representedClassName="Note" syncable="YES" codeGenerationType="class">
         <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createdAtTI" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="expirationAtTI" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
         <relationship name="notebook" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Notebook" inverseName="notes" inverseEntity="Notebook" syncable="YES"/>
+        <relationship name="pictures" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="NotePicture" inverseName="note" inverseEntity="NotePicture" syncable="YES"/>
     </entity>
     <entity name="Notebook" representedClassName="Notebook" syncable="YES" codeGenerationType="class">
         <attribute name="compName" optional="YES" attributeType="String" syncable="YES"/>
@@ -13,8 +17,13 @@
         <attribute name="name" attributeType="String" syncable="YES"/>
         <relationship name="notes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Note" inverseName="notebook" inverseEntity="Note" syncable="YES"/>
     </entity>
+    <entity name="NotePicture" representedClassName="NotePicture" syncable="YES" codeGenerationType="class">
+        <attribute name="picture" optional="YES" attributeType="Binary" syncable="YES"/>
+        <relationship name="note" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Note" inverseName="pictures" inverseEntity="Note" syncable="YES"/>
+    </entity>
     <elements>
-        <element name="Note" positionX="-9" positionY="54" width="128" height="105"/>
+        <element name="Note" positionX="-9" positionY="54" width="128" height="165"/>
         <element name="Notebook" positionX="-225" positionY="26" width="128" height="120"/>
+        <element name="NotePicture" positionX="-117" positionY="99" width="128" height="75"/>
     </elements>
 </model>
