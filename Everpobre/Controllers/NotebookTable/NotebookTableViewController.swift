@@ -54,16 +54,19 @@ class NotebookTableViewController: UITableViewController {
          */
         
         // 3.- (Opcional) Queremos un orden? -> Añadir sort description.
-        let sortByNotebookDefault = NSSortDescriptor(key: "isDefault", ascending: false)
-        let sortByNotebookName = NSSortDescriptor(key: "name", ascending: true)
-        fetchRequest.sortDescriptors = [sortByNotebookDefault, sortByNotebookName]
+        //let sortByDefault = NSSortDescriptor(key: "isDefault", ascending: false)
+        //let sortByName = NSSortDescriptor(key: "name", ascending: true)
+        let sortByDate = NSSortDescriptor(key: "createdAtTI", ascending: true)
+        fetchRequest.sortDescriptors = [sortByDate]
         
         // carga en memoria en paquetes de 25 (util para trabajar con listas muy grandes)
         fetchRequest.fetchBatchSize = 25
         
         self.fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewMOC, sectionNameKeyPath: nil, cacheName: nil)
         
-        try! fetchResultController.performFetch()
+        do {
+            try fetchResultController.performFetch()
+        } catch {}
         
         fetchResultController.delegate = self
     }
@@ -206,66 +209,5 @@ class NotebookTableViewController: UITableViewController {
         selectDeleteMode.prepareForIPAD(source: self.view, bartButtonItem: nil, direction: .init(rawValue: 0))
         
         self.present(selectDeleteMode, animated: true, completion: nil)
-    }
-}
-
-// MARK: Toolbar Buttons actions
-
-extension NotebookTableViewController {
-    @objc func done() {
-        dismiss(animated: true) {
-            guard let done = self.didDismiss else { return }
-            done()
-        }
-    }
-
-    @objc func addNotebook() {
-        Notebook.create(name: "New notebook \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1  )")
-    }
-    
-    @objc func editTable() {
-        tableView.setEditing(true, animated: true)
-        navigationItem.rightBarButtonItems?.removeLast()
-        navigationItem.rightBarButtonItems?.append(UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelEditTable)))
-    }
-    
-    @objc func cancelEditTable() {
-        tableView.setEditing(false, animated: true)
-        navigationItem.rightBarButtonItems?.removeLast()
-        navigationItem.rightBarButtonItems?.append(UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editTable)))
-    }
-}
-
-// MARK: NSFetchedResultsControllerDelegate
-
-extension NotebookTableViewController : NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.tableView.reloadData()
-    }
-}
-
-// MARK: NotebookFormCellDelegate
-
-extension NotebookTableViewController : NotebookFormCellDelegate {
-    func notebookFormCell(_ uiViewCell: NotebookFormCell, didDefault: Notebook) {
-        if didDefault.isDefault {
-            return
-        }
-        
-        let confirmChangeDefault = UIAlertController(title: "Default notebook", message: "Are you sure you would like to mark \"\(didDefault.name!)\" as default notebook?", preferredStyle: .actionSheet)
-        
-        let makeDefaultAction = UIAlertAction(title: "Mark as default", style: .default, handler: { (action: UIAlertAction) -> Void in
-            
-            Notebook.makeDefault(didDefault)
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        confirmChangeDefault.addAction(makeDefaultAction)
-        confirmChangeDefault.addAction(cancelAction)
-        
-        confirmChangeDefault.prepareForIPAD(source: self.view, bartButtonItem: nil, direction: .init(rawValue: 0))
-        
-        present(confirmChangeDefault, animated: true, completion: nil)
     }
 }

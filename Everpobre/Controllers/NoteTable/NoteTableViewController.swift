@@ -29,11 +29,14 @@ class NoteTableViewController: UITableViewController {
     var fetchResultController: NSFetchedResultsController<Note>!
     var lastSelectionRestored: Bool = false
     var notes: [[Note]]
+    let formatter: DateFormatter
     
     // MARK: - Initialization
     
     init() {
         notes = [[Note]]()
+        formatter = DateFormatter()
+        formatter.dateFormat = "dd-MM-yyyy HH:mm"
         super.init(style: .grouped)
         title = "Notes"
         tableView.allowsMultipleSelectionDuringEditing = false
@@ -67,23 +70,12 @@ class NoteTableViewController: UITableViewController {
         let sortByDate = NSSortDescriptor(key: "createdAtTI", ascending: true)
         fetchRequest.sortDescriptors = [ sortByNotebookName, sortByDate ]
         
-        // 4.- (Opcional) Filtrado.
-        //let created24H = Date().timeIntervalSince1970 - 24*3600
-        //let predicate = NSPredicate(format: "createdAtTI > %f", created24H)
-        //fetchRequest.predicate = predicate
+        // 4.- (Opcional) Filtrado (NSPredicate).
         
-        // carga en memoria en paquetes de 25 (util para trabajar con listas muy grandes)
+        // Carga en memoria en paquetes de 25 (util para trabajar con listas muy grandes)
         fetchRequest.fetchBatchSize = 25
         
-        // No es necesario con NSFetchedController
-        // 5.- Ejecutar request.
-        // do {
-        //   try notes = viewMOC.fetch(fetchRequest)
-        // } catch {
-        //    print(error)
-        // }
-        
-        self.fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewMOC, sectionNameKeyPath: "notebook.name", cacheName: nil)
+        self.fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewMOC, sectionNameKeyPath: nil, cacheName: nil)
         
         do {
             try fetchResultController.performFetch()
@@ -123,10 +115,11 @@ class NoteTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier") ??
-            UITableViewCell(style: .default, reuseIdentifier: "reuseIdentifier")
+            UITableViewCell(style: .value1, reuseIdentifier: "reuseIdentifier")
 
         // cell.textLabel?.text = fetchResultController.object(at: indexPath).title
         cell.textLabel?.text = notes[indexPath.section][indexPath.row].title
+        cell.detailTextLabel?.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(notes[indexPath.section][indexPath.row].createdAtTI)))
         //cell.accessoryType = .disclosureIndicator
         
         return cell
@@ -259,66 +252,9 @@ class NoteTableViewController: UITableViewController {
             delegate?.noteTableViewController(self, didSelectNote: note)
         }
     }
-}
-
-// MARK: Toolbar Buttons actions
-
-extension NoteTableViewController {
-    var newNoteTitle: String {
-        return "New note \( (self.fetchResultController.fetchedObjects?.count ?? 0) + 1 )"
-    }
     
-    @objc func addNewNote() {
-        Note.create(target: nil, title: newNoteTitle)
-    }
-    
-    @objc func showNotebooks() {
-        let notebookVC = NotebookTableViewController()
-        notebookVC.didDismiss = {
-            do {
-                try self.fetchResultController.performFetch()
-            } catch { }
-            
-            self.loadNotes()
-        }
-        
-        let navVC = notebookVC.wrappedInNavigation()
-        navVC.modalPresentationStyle = .overCurrentContext
-        
-        self.present(navVC, animated: true) { }
-    }
-    
-    @objc func selectNotebook() {
-        let notebooks = Notebook.getAll(in: DataManager.shared.persistentContainer.viewContext)
-        
-        let selectNotebook = UIAlertController(title: "Select Notebook", message: "Select target notebook", preferredStyle: .actionSheet)
-        
-        notebooks.forEach({ (el) in
-            selectNotebook.addAction(UIAlertAction(title: el.name, style: .default, handler: {(action: UIAlertAction) -> Void in
-                Note.create(target: el, title: self.newNoteTitle)
-            }))
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        selectNotebook.addAction(cancelAction)
-        
-        selectNotebook.prepareForIPAD(source: self.view, bartButtonItem: self.toolbarItems?.first, direction: .down)
-        
-        self.present(selectNotebook, animated: true, completion: nil)
-    }
-}
+    // MARK: - Save last selection
 
-// MARK: NSFetchedResultsControllerDelegate
-
-extension NoteTableViewController : NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.loadNotes()
-    }
-}
-
-// MARK: Save last selection
-
-extension NoteTableViewController {
     func saveLastSelectedNote(at indexPath: IndexPath) {
         let defaults = UserDefaults.standard
         defaults.set(indexPath.section, forKey: NoteTableViewControllerKeys.LastRow.rawValue)

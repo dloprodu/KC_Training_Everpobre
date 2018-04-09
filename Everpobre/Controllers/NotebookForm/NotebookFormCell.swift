@@ -67,19 +67,3 @@ class NotebookFormCell: UITableViewCell {
         delegate?.notebookFormCell(self, didDefault: model)
     }
 }
-
-// MARK: UITextFieldDelegate
-
-extension NotebookFormCell: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        guard let notebook = self.notebook else {
-            return
-        }
-        
-        guard let name = textField.text else {
-            return
-        }
-        
-        notebook.update(name: name)
-    }
-}
