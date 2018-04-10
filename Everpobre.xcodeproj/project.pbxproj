@@ -131,9 +131,9 @@
 		633B66F62054915A00BEB5E1 /* Everpobre */ = {
 			isa = PBXGroup;
 			children = (
+				633B66F72054915B00BEB5E1 /* AppDelegate.swift */,
 				633B66FE2054915B00BEB5E1 /* Assets.xcassets */,
 				633B67032054915B00BEB5E1 /* Info.plist */,
-				63A73369207BF6A400A77BA7 /* AppDelegate */,
 				63A73367207BF56A00A77BA7 /* Views */,
 				63A73366207BF55E00A77BA7 /* Controllers */,
 				63710EFE207975DB001F24A6 /* Extensions */,
@@ -218,14 +218,6 @@
 				63A7337D207BFCD800A77BA7 /* MasterViewController+UISplitViewControllerDelegate.swift */,
 			);
 			path = Master;
-			sourceTree = "<group>";
-		};
-		63A73369207BF6A400A77BA7 /* AppDelegate */ = {
-			isa = PBXGroup;
-			children = (
-				633B66F72054915B00BEB5E1 /* AppDelegate.swift */,
-			);
-			path = AppDelegate;
 			sourceTree = "<group>";
 		};
 		63A7336A207BF71100A77BA7 /* Note */ = {
