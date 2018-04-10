@@ -40,6 +40,7 @@
 		63A73386207C01BC00A77BA7 /* NoteViewByCodeController+UIImagePickerControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A73385207C01BC00A77BA7 /* NoteViewByCodeController+UIImagePickerControllerDelegate.swift */; };
 		63A73388207C01E700A77BA7 /* NoteViewByCodeController+UITextFieldDelegate .swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A73387207C01E700A77BA7 /* NoteViewByCodeController+UITextFieldDelegate .swift */; };
 		63A7338A207C022B00A77BA7 /* NoteViewByCodeController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A73389207C022B00A77BA7 /* NoteViewByCodeController+Actions.swift */; };
+		63AC1818207D5B7400254D56 /* NoteViewByCodeController+UITextViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AC1817207D5B7400254D56 /* NoteViewByCodeController+UITextViewDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 		63A73385207C01BC00A77BA7 /* NoteViewByCodeController+UIImagePickerControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewByCodeController+UIImagePickerControllerDelegate.swift"; sourceTree = "<group>"; };
 		63A73387207C01E700A77BA7 /* NoteViewByCodeController+UITextFieldDelegate .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewByCodeController+UITextFieldDelegate .swift"; sourceTree = "<group>"; };
 		63A73389207C022B00A77BA7 /* NoteViewByCodeController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewByCodeController+Actions.swift"; sourceTree = "<group>"; };
+		63AC1817207D5B7400254D56 /* NoteViewByCodeController+UITextViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewByCodeController+UITextViewDelegate.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -231,6 +233,7 @@
 				63A73385207C01BC00A77BA7 /* NoteViewByCodeController+UIImagePickerControllerDelegate.swift */,
 				63A73387207C01E700A77BA7 /* NoteViewByCodeController+UITextFieldDelegate .swift */,
 				63A73389207C022B00A77BA7 /* NoteViewByCodeController+Actions.swift */,
+				63AC1817207D5B7400254D56 /* NoteViewByCodeController+UITextViewDelegate.swift */,
 			);
 			path = Note;
 			sourceTree = "<group>";
@@ -378,6 +381,7 @@
 				63A73380207C011700A77BA7 /* NoteViewByCodeController+ToolbarActions.swift in Sources */,
 				636B176F207AA72300AB18BC /* Notebook+Additions.swift in Sources */,
 				63A73376207BF9FC00A77BA7 /* NotebookTableViewController+NotebookFormCellDelegate.swift in Sources */,
+				63AC1818207D5B7400254D56 /* NoteViewByCodeController+UITextViewDelegate.swift in Sources */,
 				637210E92057182800F17293 /* Everpobre.xcdatamodeld in Sources */,
 				637210EB205720A400F17293 /* DataManager.swift in Sources */,
 				63A73370207BF8C800A77BA7 /* NotebookFormCell+UITextFieldDelegate.swift in Sources */,
