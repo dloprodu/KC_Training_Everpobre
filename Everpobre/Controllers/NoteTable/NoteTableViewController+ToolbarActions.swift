@@ -22,7 +22,7 @@ extension NoteTableViewController {
                 try self.fetchResultController.performFetch()
             } catch { }
             
-            self.loadNotes()
+            self.tableView.reloadData()
         }
         
         let navVC = notebookVC.wrappedInNavigation()

@@ -11,6 +11,6 @@ import CoreData
 
 extension NoteTableViewController : NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        self.loadNotes()
+        self.tableView.reloadData()
     }
 }

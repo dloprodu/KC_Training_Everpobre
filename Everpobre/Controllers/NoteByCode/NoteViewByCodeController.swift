@@ -14,8 +14,6 @@ class NoteViewByCodeController: UIViewController  {
     
     let formatter: DateFormatter
     
-    let scrollView = UIScrollView()
-    
     let dateLabel = UILabel()
     let dateFromLabel = UILabel()
     let expirationDateLabel = UILabel()
