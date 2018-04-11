@@ -35,6 +35,6 @@ extension NoteViewController {
     }
     
     @objc func addLocation() {
-        
+        self.navigationController?.pushViewController(SelectionMapViewController(), animated: true)
     }
 }

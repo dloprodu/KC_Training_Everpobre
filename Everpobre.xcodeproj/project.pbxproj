@@ -34,6 +34,9 @@
 		63728087207EA0ED00AD90A5 /* NoteViewController+UITextFieldDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63728086207EA0ED00AD90A5 /* NoteViewController+UITextFieldDelegate.swift */; };
 		63728089207EA10500AD90A5 /* NoteViewController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63728088207EA10500AD90A5 /* NoteViewController+Actions.swift */; };
 		6372808B207EA11A00AD90A5 /* NoteViewController+UITextViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6372808A207EA11A00AD90A5 /* NoteViewController+UITextViewDelegate.swift */; };
+		6372808E207EA7C300AD90A5 /* SelectionMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6372808D207EA7C300AD90A5 /* SelectionMapViewController.swift */; };
+		63728090207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6372808F207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift */; };
+		63728092207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63728091207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift */; };
 		63A73370207BF8C800A77BA7 /* NotebookFormCell+UITextFieldDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A7336F207BF8C800A77BA7 /* NotebookFormCell+UITextFieldDelegate.swift */; };
 		63A73372207BF92B00A77BA7 /* NotebookTableViewController+ToolbarActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A73371207BF92B00A77BA7 /* NotebookTableViewController+ToolbarActions.swift */; };
 		63A73374207BF96D00A77BA7 /* NotebookTableViewController+NSFetchedResultsControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A73373207BF96D00A77BA7 /* NotebookTableViewController+NSFetchedResultsControllerDelegate.swift */; };
@@ -92,6 +95,9 @@
 		63728086207EA0ED00AD90A5 /* NoteViewController+UITextFieldDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewController+UITextFieldDelegate.swift"; sourceTree = "<group>"; };
 		63728088207EA10500AD90A5 /* NoteViewController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewController+Actions.swift"; sourceTree = "<group>"; };
 		6372808A207EA11A00AD90A5 /* NoteViewController+UITextViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewController+UITextViewDelegate.swift"; sourceTree = "<group>"; };
+		6372808D207EA7C300AD90A5 /* SelectionMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionMapViewController.swift; sourceTree = "<group>"; };
+		6372808F207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectionMapViewController+MKMapViewDelegate.swift"; sourceTree = "<group>"; };
+		63728091207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectionMapViewController+UITextFieldDelegate.swift"; sourceTree = "<group>"; };
 		63A7336F207BF8C800A77BA7 /* NotebookFormCell+UITextFieldDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotebookFormCell+UITextFieldDelegate.swift"; sourceTree = "<group>"; };
 		63A73371207BF92B00A77BA7 /* NotebookTableViewController+ToolbarActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotebookTableViewController+ToolbarActions.swift"; sourceTree = "<group>"; };
 		63A73373207BF96D00A77BA7 /* NotebookTableViewController+NSFetchedResultsControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotebookTableViewController+NSFetchedResultsControllerDelegate.swift"; sourceTree = "<group>"; };
@@ -196,6 +202,16 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		6372808C207EA75200AD90A5 /* SelectionMapViewController */ = {
+			isa = PBXGroup;
+			children = (
+				6372808D207EA7C300AD90A5 /* SelectionMapViewController.swift */,
+				63728091207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift */,
+				6372808F207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift */,
+			);
+			path = SelectionMapViewController;
+			sourceTree = "<group>";
+		};
 		6376AC8E205871AD00821B51 /* ManagedObject */ = {
 			isa = PBXGroup;
 			children = (
@@ -208,6 +224,7 @@
 		63A73366207BF55E00A77BA7 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				6372808C207EA75200AD90A5 /* SelectionMapViewController */,
 				63AC1819207D72CB00254D56 /* NoteByCode */,
 				63A7336E207BF77000A77BA7 /* NotebookForm */,
 				63A7336D207BF75900A77BA7 /* NotebookTable */,
@@ -410,10 +427,12 @@
 				63728089207EA10500AD90A5 /* NoteViewController+Actions.swift in Sources */,
 				6372808B207EA11A00AD90A5 /* NoteViewController+UITextViewDelegate.swift in Sources */,
 				63A73374207BF96D00A77BA7 /* NotebookTableViewController+NSFetchedResultsControllerDelegate.swift in Sources */,
+				6372808E207EA7C300AD90A5 /* SelectionMapViewController.swift in Sources */,
 				63A73380207C011700A77BA7 /* NoteViewByCodeController+ToolbarActions.swift in Sources */,
 				636B176F207AA72300AB18BC /* Notebook+Additions.swift in Sources */,
 				63A73376207BF9FC00A77BA7 /* NotebookTableViewController+NotebookFormCellDelegate.swift in Sources */,
 				63AC1818207D5B7400254D56 /* NoteViewByCodeController+UITextViewDelegate.swift in Sources */,
+				63728090207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift in Sources */,
 				637210E92057182800F17293 /* Everpobre.xcdatamodeld in Sources */,
 				63728085207EA0D300AD90A5 /* NoteViewController+UIImagePickerControllerDelegate.swift in Sources */,
 				637210EB205720A400F17293 /* DataManager.swift in Sources */,
@@ -426,6 +445,7 @@
 				63A73386207C01BC00A77BA7 /* NoteViewByCodeController+UIImagePickerControllerDelegate.swift in Sources */,
 				637210ED20572F3D00F17293 /* NoteTableViewController.swift in Sources */,
 				633B66F82054915B00BEB5E1 /* AppDelegate.swift in Sources */,
+				63728092207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift in Sources */,
 				63A73384207C019400A77BA7 /* NoteViewByCodeController+UINavigationControllerDelegate.swift in Sources */,
 				63A7338A207C022B00A77BA7 /* NoteViewByCodeController+Actions.swift in Sources */,
 				633B671C2054AB5600BEB5E1 /* NoteViewByCodeController.swift in Sources */,
