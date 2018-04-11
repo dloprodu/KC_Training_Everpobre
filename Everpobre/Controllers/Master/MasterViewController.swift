@@ -31,6 +31,7 @@ class MasterViewController: UISplitViewController {
         
         self.noteTableVC.delegate = self.noteDetailVC
         
+        self.preferredDisplayMode = .allVisible
         self.viewControllers = [
             self.noteTableNavC,
             self.noteDetailNavC

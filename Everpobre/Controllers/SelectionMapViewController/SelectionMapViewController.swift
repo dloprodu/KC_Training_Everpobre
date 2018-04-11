@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 import Contacts
 
-typealias MapDidSelection = (Double, Double)->Void
+typealias MapDidSelection = (Double, Double, String?)->Void
 
 class SelectionMapViewController: UIViewController {
     
@@ -21,6 +21,7 @@ class SelectionMapViewController: UIViewController {
     let textField = UITextField()
     
     var mapDidSelection: MapDidSelection?
+    var annotation: MKPointAnnotation?
     
     // MARK: - Initialization
     
@@ -74,6 +75,9 @@ class SelectionMapViewController: UIViewController {
         
         textField.delegate = self
         mapView.delegate = self
+        
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(addAnnotation))
+        mapView.addGestureRecognizer(tapRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,5 +86,47 @@ class SelectionMapViewController: UIViewController {
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D.init(latitude: 40.425, longitude: -3.7035), span: MKCoordinateSpan.init(latitudeDelta: 0.1, longitudeDelta: 0.1))
         
         mapView.setRegion(region, animated: false)
+    }
+    
+    // MARK: - Actions
+    
+    @objc func addAnnotation(gestureRecognizer: UIGestureRecognizer) {
+        let touchPoint = gestureRecognizer.location(in: mapView)
+        let coord = mapView.convert(touchPoint, toCoordinateFrom: mapView)
+        
+        let location = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
+        let geoCoder = CLGeocoder()
+        
+        if annotation != nil {
+            mapView.removeAnnotation(annotation!)
+        }
+        
+        geoCoder.reverseGeocodeLocation(location) { (placeMarkArray, error) in
+            if let places = placeMarkArray {
+                if let place = places.first {
+                    DispatchQueue.main.async {
+                        if let postalAdd = place.postalAddress {
+                            self.annotation = MKPointAnnotation()
+                            self.annotation?.coordinate = coord;
+                            self.annotation?.title = "\(postalAdd.street), \(postalAdd.city)"
+                            self.mapView.addAnnotation(self.annotation!)
+                            
+                            self.textField.text = self.annotation?.title
+                            
+                            if self.mapDidSelection != nil {
+                                self.mapDidSelection!(coord.latitude, coord.longitude, self.textField.text)
+                            }
+                        } else {
+                            self.annotation = MKPointAnnotation()
+                            self.annotation?.coordinate = coord;
+                            
+                            if self.mapDidSelection != nil {
+                                self.mapDidSelection!(coord.latitude, coord.longitude, nil)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -14,7 +14,8 @@ extension NoteViewController : UIImagePickerControllerDelegate {
         
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
         
-        imageView.image = image
+        // TODO
+        // imageView.image = image
         
         picker.dismiss(animated: true, completion: nil)
     }

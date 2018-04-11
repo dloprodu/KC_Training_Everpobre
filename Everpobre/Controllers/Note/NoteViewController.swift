@@ -7,6 +7,45 @@
 //
 
 import UIKit
+import MapKit
+
+// Constraints for UIImageView and MKMapView
+class NoteMediaElement<Element> where Element: UIView {
+    let element: Element
+    let top: NSLayoutConstraint
+    let bottom: NSLayoutConstraint
+    let left: NSLayoutConstraint
+    let right: NSLayoutConstraint
+    let constraints: [NSLayoutConstraint]
+    
+    init(container: UIView, reference: UIView) {
+        element = Element()
+        element.translatesAutoresizingMaskIntoConstraints = false
+        element.isUserInteractionEnabled = true
+        
+        top = NSLayoutConstraint(item: element, attribute: .top, relatedBy: .equal, toItem: reference, attribute: .top, multiplier: 1, constant: 20)
+        
+        bottom = NSLayoutConstraint(item: element, attribute: .bottom, relatedBy: .equal, toItem: reference, attribute: .bottom, multiplier: 1, constant: -20)
+        
+        left = NSLayoutConstraint(item: element, attribute: .left, relatedBy: .equal, toItem: reference, attribute: .left, multiplier: 1, constant: 20)
+        
+        right = NSLayoutConstraint(item: element, attribute: .right, relatedBy: .equal, toItem: reference, attribute: .right, multiplier: 1, constant: -20)
+        
+        constraints = [
+            NSLayoutConstraint(item: element, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 150),
+            NSLayoutConstraint(item: element, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 150),
+            top,
+            bottom,
+            left,
+            right
+        ]
+        
+        container.addSubview(element)
+        container.addConstraints(constraints)
+        
+        NSLayoutConstraint.deactivate([bottom,right])
+    }
+}
 
 class NoteViewController: UIViewController {
     
@@ -23,8 +62,11 @@ class NoteViewController: UIViewController {
     
     let formatter: DateFormatter
     var note: Note?
-    
-    let imageView = UIImageView()
+
+    var mapView: NoteMediaElement<MKMapView>?
+    var annotation: MKPointAnnotation?
+
+    var pictures: [NoteMediaElement<UIImageView>]?
     
     // MARK: - Initialization
     
@@ -66,11 +108,11 @@ class NoteViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        var rect = view.convert(imageView.frame, to: contentTextView)
-        rect = rect.insetBy(dx: -15, dy: -15)
+        updateContetnExclusionPath()
         
-        let paths = UIBezierPath(rect: rect)
-        contentTextView.textContainer.exclusionPaths = [paths]
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+            self.updateContetnExclusionPath()
+        })
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -85,15 +127,48 @@ class NoteViewController: UIViewController {
     func syncModelWithView() {
         fromDateLabel.text = self.formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.note?.createdAtTI ?? 0)))
         
+        toDateLabel.text = "--.--.----"
         if let expiration = note?.expirationAtTI {
-            toDateLabel.text = self.formatter.string(from: Date(timeIntervalSince1970: TimeInterval(expiration)))
-        } else {
-            toDateLabel.text = "--.--.----"
+            if expiration != 0 {
+                toDateLabel.text = self.formatter.string(from: Date(timeIntervalSince1970: TimeInterval(expiration)))
+            }
         }
         
         titleTextField.text = self.note?.title
         contentTextView.text = self.note?.content
         
-        // imageView
+        updateMapLocation()
+    }
+    
+    func updateMapLocation() {
+        if note?.lat == 0 && note?.long == 0 {
+            return
+        }
+        
+        if mapView == nil {
+            mapView = NoteMediaElement<MKMapView>(container: self.mainStackView, reference: contentTextView)
+        }
+        
+        let coord = CLLocationCoordinate2D(latitude: note?.lat ?? 0, longitude: note?.long ?? 0)
+        
+        if annotation != nil {
+            self.mapView?.element.removeAnnotation(annotation!)
+        }
+        
+        self.annotation = MKPointAnnotation()
+        self.annotation?.coordinate = coord;
+        self.mapView?.element.addAnnotation(self.annotation!)
+    }
+    
+    func updateContetnExclusionPath() {
+        if let mapView = self.mapView {
+            var rect = self.mainStackView.convert(mapView.element.frame, to: contentTextView)
+            rect = rect.insetBy(dx: -15, dy: -15)
+            
+            let paths = UIBezierPath(rect: rect)
+            self.contentTextView.textContainer.exclusionPaths = [paths]
+        }
+        
+        // TODO: pictures
     }
 }

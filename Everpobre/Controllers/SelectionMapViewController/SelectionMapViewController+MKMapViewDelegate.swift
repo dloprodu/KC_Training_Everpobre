@@ -13,7 +13,7 @@ import CoreLocation
 
 extension SelectionMapViewController : MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        
+        /*
         let centerCoord = mapView.centerCoordinate
         
         let location = CLLocation(latitude: centerCoord.latitude, longitude: centerCoord.longitude)
@@ -36,6 +36,7 @@ extension SelectionMapViewController : MKMapViewDelegate {
                 }
             }
         }
+        */
     }
 
 }
