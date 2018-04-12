@@ -31,13 +31,13 @@ class NoteMediaElement<Element> where Element: UIView {
         
         self.item.translatesAutoresizingMaskIntoConstraints = false
         
-        top = NSLayoutConstraint(item: item, attribute: .top, relatedBy: .equal, toItem: self.toItem, attribute: .top, multiplier: 1, constant: 20)
+        top = NSLayoutConstraint(item: item, attribute: .top, relatedBy: .equal, toItem: self.toItem, attribute: .top, multiplier: 1, constant: 15)
         
-        bottom = NSLayoutConstraint(item: item, attribute: .bottom, relatedBy: .equal, toItem: self.toItem, attribute: .bottom, multiplier: 1, constant: -20)
+        bottom = NSLayoutConstraint(item: item, attribute: .bottom, relatedBy: .equal, toItem: self.toItem, attribute: .bottom, multiplier: 1, constant: 0)
         
-        left = NSLayoutConstraint(item: item, attribute: .left, relatedBy: .equal, toItem: self.toItem, attribute: .left, multiplier: 1, constant: 20)
+        left = NSLayoutConstraint(item: item, attribute: .left, relatedBy: .equal, toItem: self.toItem, attribute: .left, multiplier: 1, constant: 0)
         
-        right = NSLayoutConstraint(item: item, attribute: .right, relatedBy: .equal, toItem: self.toItem, attribute: .right, multiplier: 1, constant: -20)
+        right = NSLayoutConstraint(item: item, attribute: .right, relatedBy: .equal, toItem: self.toItem, attribute: .right, multiplier: 1, constant: 0)
         
         constraints = [
             NSLayoutConstraint(item: item, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 150),

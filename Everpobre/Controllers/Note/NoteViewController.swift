@@ -109,12 +109,13 @@ class NoteViewController: UIViewController {
         titleTextField.text = self.note?.title
         contentTextView.text = self.note?.content
         
-        note?.pictures?.forEach({ (notePicture) -> Void in
-            let media = NoteMediaElement<UIImageView>(self, container: self.mainStackView, toItem: self.contentTextView)
-            media.item.image = UIImage(data: (notePicture as! NotePicture).picture!)
-            
-            self.pictures?.append(media)
+        if (self.pictures?.count == 0) {
+            note?.pictures?.forEach({ (notePicture) -> Void in
+                let media = NoteMediaElement<UIImageView>(self, container: self.mainStackView, toItem: self.contentTextView)
+                media.item.image = UIImage(data: (notePicture as! NotePicture).picture!)
+                self.pictures?.append(media)
             })
+        }
         
         updateMapLocation()
     }
