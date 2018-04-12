@@ -35,14 +35,6 @@ extension Note {
             do {
                 try backMOC.save()
             } catch { }
-            
-            // Ya no es necesario con NSFetchedController
-            //DispatchQueue.main.async {
-            //    let viewNote = DataManager.shared.persistentContainer.viewContext.object(with: note.objectID) as! Note
-            
-            //    self.notes.append(viewNote)
-            //    self.tableView.reloadData()
-            //}
         }
     }
     

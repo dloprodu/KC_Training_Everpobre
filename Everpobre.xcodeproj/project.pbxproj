@@ -24,6 +24,8 @@
 		63710EFB2078C963001F24A6 /* NotebookFormCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63710EF92078C963001F24A6 /* NotebookFormCell.xib */; };
 		63710EFD20792E37001F24A6 /* BorderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63710EFC20792E37001F24A6 /* BorderButton.swift */; };
 		63710F00207975F0001F24A6 /* Array+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63710EFF207975F0001F24A6 /* Array+Additions.swift */; };
+		63714144207FDE63003ED69B /* NoteMediaElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63714143207FDE63003ED69B /* NoteMediaElement.swift */; };
+		63714146207FF3EE003ED69B /* NotePicture+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63714145207FF3EE003ED69B /* NotePicture+Additions.swift */; };
 		637210E92057182800F17293 /* Everpobre.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 637210E72057182800F17293 /* Everpobre.xcdatamodeld */; };
 		637210EB205720A400F17293 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637210EA205720A400F17293 /* DataManager.swift */; };
 		637210ED20572F3D00F17293 /* NoteTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637210EC20572F3D00F17293 /* NoteTableViewController.swift */; };
@@ -85,6 +87,8 @@
 		63710EF92078C963001F24A6 /* NotebookFormCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NotebookFormCell.xib; sourceTree = "<group>"; };
 		63710EFC20792E37001F24A6 /* BorderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderButton.swift; sourceTree = "<group>"; };
 		63710EFF207975F0001F24A6 /* Array+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Additions.swift"; sourceTree = "<group>"; };
+		63714143207FDE63003ED69B /* NoteMediaElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMediaElement.swift; sourceTree = "<group>"; };
+		63714145207FF3EE003ED69B /* NotePicture+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotePicture+Additions.swift"; sourceTree = "<group>"; };
 		637210E82057182800F17293 /* Everpobre.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Everpobre.xcdatamodel; sourceTree = "<group>"; };
 		637210EA205720A400F17293 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		637210EC20572F3D00F17293 /* NoteTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewController.swift; sourceTree = "<group>"; };
@@ -217,6 +221,7 @@
 			children = (
 				636B176C207AA71000AB18BC /* Note+Additions.swift */,
 				636B176E207AA72300AB18BC /* Notebook+Additions.swift */,
+				63714145207FF3EE003ED69B /* NotePicture+Additions.swift */,
 			);
 			path = ManagedObject;
 			sourceTree = "<group>";
@@ -265,6 +270,7 @@
 				63728086207EA0ED00AD90A5 /* NoteViewController+UITextFieldDelegate.swift */,
 				63728088207EA10500AD90A5 /* NoteViewController+Actions.swift */,
 				6372808A207EA11A00AD90A5 /* NoteViewController+UITextViewDelegate.swift */,
+				63714143207FDE63003ED69B /* NoteMediaElement.swift */,
 			);
 			path = Note;
 			sourceTree = "<group>";
@@ -435,6 +441,7 @@
 				63728090207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift in Sources */,
 				637210E92057182800F17293 /* Everpobre.xcdatamodeld in Sources */,
 				63728085207EA0D300AD90A5 /* NoteViewController+UIImagePickerControllerDelegate.swift in Sources */,
+				63714144207FDE63003ED69B /* NoteMediaElement.swift in Sources */,
 				637210EB205720A400F17293 /* DataManager.swift in Sources */,
 				63A73370207BF8C800A77BA7 /* NotebookFormCell+UITextFieldDelegate.swift in Sources */,
 				63A73388207C01E700A77BA7 /* NoteViewByCodeController+UITextFieldDelegate .swift in Sources */,
@@ -442,6 +449,7 @@
 				633B67192054929E00BEB5E1 /* NoteViewController.swift in Sources */,
 				635317B92076974500A8E88A /* UIViewController+Additions.swift in Sources */,
 				63728087207EA0ED00AD90A5 /* NoteViewController+UITextFieldDelegate.swift in Sources */,
+				63714146207FF3EE003ED69B /* NotePicture+Additions.swift in Sources */,
 				63A73386207C01BC00A77BA7 /* NoteViewByCodeController+UIImagePickerControllerDelegate.swift in Sources */,
 				637210ED20572F3D00F17293 /* NoteTableViewController.swift in Sources */,
 				633B66F82054915B00BEB5E1 /* AppDelegate.swift in Sources */,
