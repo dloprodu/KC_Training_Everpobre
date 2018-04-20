@@ -106,6 +106,7 @@ class NoteMediaElement<Element> where Element: UIView {
             description.relativePointAt( gesture.location(in: gesture.view) )
             UIView.animate(withDuration: 0.1, animations: {
                 self.transformBeforeMove = self.item.transform
+                self.item.superview?.bringSubview(toFront: self.item)
                 self.item.transform = self.item.transform.scaledBy(x: 1.2, y: 1.2)
             })
             break
@@ -133,7 +134,7 @@ class NoteMediaElement<Element> where Element: UIView {
         case .began:
             break
         case .changed:
-            if description.scale > 1.5 && gesture.scale > 1 {
+            if description.scale > 1.3 && gesture.scale > 1 {
                 break
             }
             

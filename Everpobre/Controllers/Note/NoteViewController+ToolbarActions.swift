@@ -6,8 +6,8 @@
 //  Copyright © 2018 David López Rodriguez. All rights reserved.
 //
 
-import Foundation
 import UIKit
+import MapKit
 
 extension NoteViewController {
     @objc func catchPhoto() {
@@ -36,8 +36,10 @@ extension NoteViewController {
     }
     
     @objc func addLocation() {
-        let mapView = SelectionMapViewController()
+        let coord = CLLocationCoordinate2D(latitude: note?.lat ?? 0, longitude: note?.long ?? 0)
+        let mapView = SelectionMapViewController(coord)
         mapView.delegate = self
-        self.navigationController?.pushViewController(mapView, animated: true)
+        
+        present(mapView.wrappedInNavigation(), animated: true, completion: nil)
     }
 }

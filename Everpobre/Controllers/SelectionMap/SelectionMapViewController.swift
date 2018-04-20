@@ -22,12 +22,15 @@ class SelectionMapViewController: UIViewController {
     let mapView = MKMapView()
     let textField = UITextField()
     
+    let location: CLLocationCoordinate2D
+    
     weak var delegate: SelectionMapViewControllerDelegate?
     var annotation: MKPointAnnotation?
     
     // MARK: - Initialization
     
-    init() {
+    init(_ location: CLLocationCoordinate2D) {
+        self.location = location
         super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
         title = "Select a location"
     }
@@ -39,7 +42,6 @@ class SelectionMapViewController: UIViewController {
     // MARK: - Life Cycle
     
     override func loadView() {
-        
         let backView = UIView()
         
         backView.addSubview(mapView)
@@ -85,12 +87,35 @@ class SelectionMapViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let region = MKCoordinateRegion(center: CLLocationCoordinate2D.init(latitude: 40.425, longitude: -3.7035), span: MKCoordinateSpan.init(latitudeDelta: 0.1, longitudeDelta: 0.1))
+        var region: MKCoordinateRegion!
+        
+        if location.latitude == 0 && location.longitude == 0 {
+            region = MKCoordinateRegion(center: CLLocationCoordinate2D.init(latitude: 40.425, longitude: -3.7035), span: MKCoordinateSpan.init(latitudeDelta: 0.1, longitudeDelta: 0.1))
+        } else {
+            region = MKCoordinateRegion(center: location, span: MKCoordinateSpan.init(latitudeDelta: 0.1, longitudeDelta: 0.1))
+            
+            self.annotation = MKPointAnnotation()
+            self.annotation?.coordinate = location;
+            self.mapView.addAnnotation(self.annotation!)
+        }
         
         mapView.setRegion(region, animated: false)
+        setupUI()
+    }
+    
+    // MARK: - Helpers
+    
+    func setupUI() {
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done)),
+        ]
     }
     
     // MARK: - Actions
+    
+    @objc func done() {
+        self.dismiss(animated: true, completion: nil)
+    }
     
     @objc func addAnnotation(gestureRecognizer: UIGestureRecognizer) {
         let touchPoint = gestureRecognizer.location(in: mapView)
@@ -124,6 +149,7 @@ class SelectionMapViewController: UIViewController {
                         } else {
                             self.annotation = MKPointAnnotation()
                             self.annotation?.coordinate = coord;
+                            self.mapView.addAnnotation(self.annotation!)
                             
                             self.delegate?.selectionMapViewControl(self, didSelectionLocation: coord)
                         }

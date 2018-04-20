@@ -99,6 +99,13 @@ class NoteViewController: UIViewController {
     // MARK: - Helpers
     
     func syncModelWithView() {
+        self.toDateLabel.isEnabled = note != nil
+        self.toDateLabel.isUserInteractionEnabled = note != nil
+        self.titleTextField.isEnabled = note != nil
+        self.contentTextView.isEditable = note != nil
+        self.toolbarItems?.first?.isEnabled = note != nil
+        self.toolbarItems?.last?.isEnabled = note != nil
+        
         fromDateLabel.text = self.formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.note?.createdAtTI ?? 0)))
         
         toDateLabel.text = "--.--.----"
@@ -139,6 +146,10 @@ class NoteViewController: UIViewController {
         
         self.annotation = MKPointAnnotation()
         self.annotation?.coordinate = coord;
+        
+        let region = MKCoordinateRegion(center: coord, span: MKCoordinateSpan.init(latitudeDelta: 0.1, longitudeDelta: 0.1))
+        
+        self.mapView?.item.setRegion(region, animated: false)
         self.mapView?.item.addAnnotation(self.annotation!)
     }
     
