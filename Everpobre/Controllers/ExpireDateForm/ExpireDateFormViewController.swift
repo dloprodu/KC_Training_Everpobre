@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 protocol ExpireDateFormViewControllerDelegate: class {
     // should, will, did
@@ -21,13 +22,17 @@ class ExpireDateFormViewController: UIViewController {
     
     // MARK: - Properties
     
-    let date: Date?
+    let note: Note
+    let expireDate: Date
     weak var delegate: ExpireDateFormViewControllerDelegate?
     
     // MARK: - Initialization
     
-    init(date: Date?) {
-        self.date = date
+    init(note: Note) {
+        self.note = note
+        self.expireDate = (note.expirationAtTI == 0)
+            ? Date()
+            : Date(timeIntervalSince1970: note.expirationAtTI)
         super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
         
         title = "Limit Date"
@@ -43,7 +48,7 @@ class ExpireDateFormViewController: UIViewController {
         super.viewDidLoad()
         
         datePicker.minimumDate = Date()
-        datePicker.date = date ?? Date()
+        datePicker.date = expireDate
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -69,13 +74,30 @@ class ExpireDateFormViewController: UIViewController {
     // MARK: - Actions
     
     @objc func cancel() {
-        delegate?.expireDateFormViewController(self, didSelectData: date)
+        delegate?.expireDateFormViewController(self, didSelectData: expireDate)
         
         dismiss(animated: true, completion: nil)
     }
     
     @objc func save() {
         delegate?.expireDateFormViewController(self, didSelectData: datePicker.date)
+        
+        let center = UNUserNotificationCenter.current()
+        
+        let content = UNMutableNotificationContent()
+        content.title = NSString.localizedUserNotificationString(forKey: note.title ?? "", arguments: nil)
+        content.body = NSString.localizedUserNotificationString(forKey: note.content ?? "", arguments: nil)  
+        content.sound = UNNotificationSound.default()
+        
+        let triggerDate = Calendar.current.dateComponents([.year,.month,.day,.hour,.minute,.second,], from: datePicker.date)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+        let request = UNNotificationRequest(identifier: "NoteExpireDateNotification", content: content, trigger: trigger)
+        
+        center.add(request, withCompletionHandler: { (error) in
+            if let error = error {
+                print(error)
+            }
+        })
         
         dismiss(animated: true, completion: nil)
     }

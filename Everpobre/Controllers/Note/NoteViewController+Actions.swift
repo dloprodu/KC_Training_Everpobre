@@ -20,11 +20,11 @@ extension NoteViewController {
     }
     
     @objc func selectExpireDate() {
-        let expireDate: Date = (note?.expirationAtTI == 0)
-            ? Date()
-            : Date(timeIntervalSince1970: note?.expirationAtTI ?? 0)
+        guard let note = note else {
+            return
+        }
         
-        let expireDateForm = ExpireDateFormViewController(date: expireDate)
+        let expireDateForm = ExpireDateFormViewController(note: note)
         expireDateForm.delegate = self
         present(expireDateForm.wrappedInNavigation(), animated: true, completion: nil)
     }
