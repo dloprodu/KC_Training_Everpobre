@@ -39,6 +39,10 @@
 		6372808E207EA7C300AD90A5 /* SelectionMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6372808D207EA7C300AD90A5 /* SelectionMapViewController.swift */; };
 		63728090207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6372808F207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift */; };
 		63728092207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63728091207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift */; };
+		63754D2120808C1A00AE63D8 /* ExpireDateFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63754D1F20808C1A00AE63D8 /* ExpireDateFormViewController.swift */; };
+		63754D2220808C1A00AE63D8 /* ExpireDateFormViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63754D2020808C1A00AE63D8 /* ExpireDateFormViewController.xib */; };
+		63754D242080933800AE63D8 /* NoteViewController+ExpireDateFormViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63754D232080933800AE63D8 /* NoteViewController+ExpireDateFormViewControllerDelegate.swift */; };
+		63754D2620809BB500AE63D8 /* NoteViewController+SelectionMapViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63754D2520809BB500AE63D8 /* NoteViewController+SelectionMapViewControllerDelegate.swift */; };
 		63A73370207BF8C800A77BA7 /* NotebookFormCell+UITextFieldDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A7336F207BF8C800A77BA7 /* NotebookFormCell+UITextFieldDelegate.swift */; };
 		63A73372207BF92B00A77BA7 /* NotebookTableViewController+ToolbarActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A73371207BF92B00A77BA7 /* NotebookTableViewController+ToolbarActions.swift */; };
 		63A73374207BF96D00A77BA7 /* NotebookTableViewController+NSFetchedResultsControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A73373207BF96D00A77BA7 /* NotebookTableViewController+NSFetchedResultsControllerDelegate.swift */; };
@@ -102,6 +106,10 @@
 		6372808D207EA7C300AD90A5 /* SelectionMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionMapViewController.swift; sourceTree = "<group>"; };
 		6372808F207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectionMapViewController+MKMapViewDelegate.swift"; sourceTree = "<group>"; };
 		63728091207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectionMapViewController+UITextFieldDelegate.swift"; sourceTree = "<group>"; };
+		63754D1F20808C1A00AE63D8 /* ExpireDateFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpireDateFormViewController.swift; sourceTree = "<group>"; };
+		63754D2020808C1A00AE63D8 /* ExpireDateFormViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ExpireDateFormViewController.xib; sourceTree = "<group>"; };
+		63754D232080933800AE63D8 /* NoteViewController+ExpireDateFormViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewController+ExpireDateFormViewControllerDelegate.swift"; sourceTree = "<group>"; };
+		63754D2520809BB500AE63D8 /* NoteViewController+SelectionMapViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteViewController+SelectionMapViewControllerDelegate.swift"; sourceTree = "<group>"; };
 		63A7336F207BF8C800A77BA7 /* NotebookFormCell+UITextFieldDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotebookFormCell+UITextFieldDelegate.swift"; sourceTree = "<group>"; };
 		63A73371207BF92B00A77BA7 /* NotebookTableViewController+ToolbarActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotebookTableViewController+ToolbarActions.swift"; sourceTree = "<group>"; };
 		63A73373207BF96D00A77BA7 /* NotebookTableViewController+NSFetchedResultsControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotebookTableViewController+NSFetchedResultsControllerDelegate.swift"; sourceTree = "<group>"; };
@@ -206,14 +214,22 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		6372808C207EA75200AD90A5 /* SelectionMapViewController */ = {
+		6372808C207EA75200AD90A5 /* SelectionMap */ = {
 			isa = PBXGroup;
 			children = (
 				6372808D207EA7C300AD90A5 /* SelectionMapViewController.swift */,
 				63728091207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift */,
 				6372808F207EA89800AD90A5 /* SelectionMapViewController+MKMapViewDelegate.swift */,
 			);
-			path = SelectionMapViewController;
+			path = SelectionMap;
+			sourceTree = "<group>";
+		};
+		63754D16208087C000AE63D8 /* ExpireDateForm */ = {
+			isa = PBXGroup;
+			children = (
+				63754D1F20808C1A00AE63D8 /* ExpireDateFormViewController.swift */,
+			);
+			path = ExpireDateForm;
 			sourceTree = "<group>";
 		};
 		6376AC8E205871AD00821B51 /* ManagedObject */ = {
@@ -229,7 +245,8 @@
 		63A73366207BF55E00A77BA7 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				6372808C207EA75200AD90A5 /* SelectionMapViewController */,
+				63754D16208087C000AE63D8 /* ExpireDateForm */,
+				6372808C207EA75200AD90A5 /* SelectionMap */,
 				63AC1819207D72CB00254D56 /* NoteByCode */,
 				63A7336E207BF77000A77BA7 /* NotebookForm */,
 				63A7336D207BF75900A77BA7 /* NotebookTable */,
@@ -243,6 +260,7 @@
 		63A73367207BF56A00A77BA7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				63754D2020808C1A00AE63D8 /* ExpireDateFormViewController.xib */,
 				633B67002054915B00BEB5E1 /* LaunchScreen.storyboard */,
 				633B67182054929E00BEB5E1 /* NoteViewController.xib */,
 				63710EF92078C963001F24A6 /* NotebookFormCell.xib */,
@@ -271,6 +289,8 @@
 				63728088207EA10500AD90A5 /* NoteViewController+Actions.swift */,
 				6372808A207EA11A00AD90A5 /* NoteViewController+UITextViewDelegate.swift */,
 				63714143207FDE63003ED69B /* NoteMediaElement.swift */,
+				63754D232080933800AE63D8 /* NoteViewController+ExpireDateFormViewControllerDelegate.swift */,
+				63754D2520809BB500AE63D8 /* NoteViewController+SelectionMapViewControllerDelegate.swift */,
 			);
 			path = Note;
 			sourceTree = "<group>";
@@ -406,6 +426,7 @@
 				633B67022054915B00BEB5E1 /* LaunchScreen.storyboard in Resources */,
 				633B671A2054929E00BEB5E1 /* NoteViewController.xib in Resources */,
 				63710EFB2078C963001F24A6 /* NotebookFormCell.xib in Resources */,
+				63754D2220808C1A00AE63D8 /* ExpireDateFormViewController.xib in Resources */,
 				633B66FF2054915B00BEB5E1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -424,6 +445,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63754D2620809BB500AE63D8 /* NoteViewController+SelectionMapViewControllerDelegate.swift in Sources */,
 				6372807F207EA06500AD90A5 /* NoteViewController+ToolbarActions.swift in Sources */,
 				635317B62076963900A8E88A /* MasterViewController.swift in Sources */,
 				63710EFD20792E37001F24A6 /* BorderButton.swift in Sources */,
@@ -453,10 +475,12 @@
 				63A73386207C01BC00A77BA7 /* NoteViewByCodeController+UIImagePickerControllerDelegate.swift in Sources */,
 				637210ED20572F3D00F17293 /* NoteTableViewController.swift in Sources */,
 				633B66F82054915B00BEB5E1 /* AppDelegate.swift in Sources */,
+				63754D242080933800AE63D8 /* NoteViewController+ExpireDateFormViewControllerDelegate.swift in Sources */,
 				63728092207EA94200AD90A5 /* SelectionMapViewController+UITextFieldDelegate.swift in Sources */,
 				63A73384207C019400A77BA7 /* NoteViewByCodeController+UINavigationControllerDelegate.swift in Sources */,
 				63A7338A207C022B00A77BA7 /* NoteViewByCodeController+Actions.swift in Sources */,
 				633B671C2054AB5600BEB5E1 /* NoteViewByCodeController.swift in Sources */,
+				63754D2120808C1A00AE63D8 /* ExpireDateFormViewController.swift in Sources */,
 				63A7337B207BFBE800A77BA7 /* NoteTableViewController+NSFetchedResultsControllerDelegate.swift in Sources */,
 				63710F00207975F0001F24A6 /* Array+Additions.swift in Sources */,
 				636B176D207AA71000AB18BC /* Note+Additions.swift in Sources */,

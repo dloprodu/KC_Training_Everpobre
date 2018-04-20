@@ -11,13 +11,7 @@ import UIKit
 
 extension NoteViewController : UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
-        note?.title = textField.text
-        
-        do {
-            try note?.managedObjectContext?.save()
-        } catch {
-            
-        }
+        self.note?.update(title: textField.text)
     }
 }
 

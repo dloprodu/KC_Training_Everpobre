@@ -36,16 +36,7 @@ extension NoteViewController {
     
     @objc func addLocation() {
         let mapView = SelectionMapViewController()
-        mapView.mapDidSelection = {[weak self] (lat: Double, long: Double, detail: String?) in
-            self?.note?.lat = lat
-            self?.note?.long = long
-            
-            do {
-                try self?.note?.managedObjectContext?.save()
-            } catch { }
-            
-            self?.updateMapLocation()
-        }
+        mapView.delegate = self
         self.navigationController?.pushViewController(mapView, animated: true)
     }
 }

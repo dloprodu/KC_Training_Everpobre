@@ -18,4 +18,14 @@ extension NoteViewController {
             titleTextField.resignFirstResponder()
         }
     }
+    
+    @objc func selectExpireDate() {
+        let expireDate: Date = (note?.expirationAtTI == 0)
+            ? Date()
+            : Date(timeIntervalSince1970: note?.expirationAtTI ?? 0)
+        
+        let expireDateForm = ExpireDateFormViewController(date: expireDate)
+        expireDateForm.delegate = self
+        present(expireDateForm.wrappedInNavigation(), animated: true, completion: nil)
+    }
 }

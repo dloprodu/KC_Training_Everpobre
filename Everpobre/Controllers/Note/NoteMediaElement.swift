@@ -9,72 +9,94 @@
 import Foundation
 import UIKit
 
-// Constraints for UIImageView and MKMapView
+struct NoteMediaDescription {
+    var point: CGPoint = CGPoint(x: 0, y: 15)
+    var relativePoint: CGPoint = CGPoint(x: 0, y: 0)
+    var scale: CGFloat = 1
+    var rotation: CGFloat = 0
+    
+    mutating func relativePointAt(_ point: CGPoint) {
+        relativePoint = point
+    }
+    
+    mutating func move(toPoint target: CGPoint) {
+        point.x = target.x - relativePoint.x
+        point.y = target.y - relativePoint.x
+    }
+    
+    mutating func scale(value: CGFloat) {
+        scale += value
+    }
+    
+    mutating func rotate(value: CGFloat) {
+        rotation += value
+    }
+}
+
 class NoteMediaElement<Element> where Element: UIView {
     let item: Element
     weak var toItem: UIView!
-    weak var view: NoteViewController!
+    weak var viewController: NoteViewController!
     let top: NSLayoutConstraint
-    let bottom: NSLayoutConstraint
     let left: NSLayoutConstraint
-    let right: NSLayoutConstraint
+    
     let constraints: [NSLayoutConstraint]
-    
-    var relativePoint: CGPoint!
-    
-    init(_ view: NoteViewController, container: UIView, toItem: UIView) {
+    var description: NoteMediaDescription
+    var transformBeforeMove: CGAffineTransform = CGAffineTransform.identity
+
+    init(_ viewController: NoteViewController, container: UIView, toItem: UIView) {
         self.item = Element()
         self.toItem = toItem
-        self.view = view
+        self.viewController = viewController
+        self.description = NoteMediaDescription()
         
         container.addSubview(self.item)
         
         self.item.translatesAutoresizingMaskIntoConstraints = false
         
-        top = NSLayoutConstraint(item: item, attribute: .top, relatedBy: .equal, toItem: self.toItem, attribute: .top, multiplier: 1, constant: 15)
+        top = NSLayoutConstraint(item: item, attribute: .top, relatedBy: .equal, toItem: self.toItem, attribute: .top, multiplier: 1, constant: description.point.y)
         
-        bottom = NSLayoutConstraint(item: item, attribute: .bottom, relatedBy: .equal, toItem: self.toItem, attribute: .bottom, multiplier: 1, constant: 0)
-        
-        left = NSLayoutConstraint(item: item, attribute: .left, relatedBy: .equal, toItem: self.toItem, attribute: .left, multiplier: 1, constant: 0)
-        
-        right = NSLayoutConstraint(item: item, attribute: .right, relatedBy: .equal, toItem: self.toItem, attribute: .right, multiplier: 1, constant: 0)
-        
+        left = NSLayoutConstraint(item: item, attribute: .left, relatedBy: .equal, toItem: self.toItem, attribute: .left, multiplier: 1, constant: description.point.x)
+
         constraints = [
             NSLayoutConstraint(item: item, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 150),
             NSLayoutConstraint(item: item, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: 150),
             top,
-            bottom,
-            left,
-            right
+            left
         ]
         
         container.addConstraints(constraints)
         
-        NSLayoutConstraint.deactivate([bottom, right])
+        self.item.transform = self.item.transform.scaledBy(x: description.scale, y: description.scale)
+        self.item.transform = self.item.transform.rotated(by: description.rotation)
         
         self.item.isUserInteractionEnabled = true
         self.item.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(moveElement)))
+        self.item.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(scaleElement)))
+        self.item.addGestureRecognizer(UIRotationGestureRecognizer(target: self, action: #selector(rotateElement)))
     }
     
     @objc func moveElement(_ gesture : UILongPressGestureRecognizer) {
         switch gesture.state {
         case .began:
-            self.view.closeKeyboard()
-            relativePoint = gesture.location(in: gesture.view)
+            self.viewController.closeKeyboard()
+            description.relativePointAt( gesture.location(in: gesture.view) )
             UIView.animate(withDuration: 0.1, animations: {
-                self.item.transform = CGAffineTransform.init(scaleX: 1.2, y: 1.2)
+                self.transformBeforeMove = self.item.transform
+                self.item.transform = self.item.transform.scaledBy(x: 1.2, y: 1.2)
             })
             break
         case .changed:
-            let location = gesture.location(in: self.toItem)
-            
-            left.constant = location.x - relativePoint.x
-            top.constant = location.y - relativePoint.y
+            description.move(toPoint: gesture.location(in: self.toItem))
+            left.constant = description.point.x
+            top.constant = description.point.y
             break
         case .ended, .cancelled:
             UIView.animate(withDuration: 0.1, animations: {
-                self.item.transform = CGAffineTransform.init(scaleX: 1, y: 1)
-                self.view.viewDidLayoutSubviews()
+                self.item.transform = self.transformBeforeMove
+                self.viewController.viewDidLayoutSubviews()
+                //self.viewController.view.layoutIfNeeded()
+                //self.viewController.contentTextView.layoutIfNeeded()
             })
             break
         default:
@@ -82,11 +104,46 @@ class NoteMediaElement<Element> where Element: UIView {
         }
     }
     
-    @objc func scale() {
-        
+    @objc func scaleElement(_ gesture: UIPinchGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            break
+        case .changed:
+            if description.scale > 1.5 && gesture.scale > 1 {
+                break
+            }
+            
+            if description.scale < 0.7 && gesture.scale < 1 {
+                break
+            }
+ 
+            description.scale(value: gesture.scale - 1)
+            
+            self.item.transform = self.item.transform.scaledBy(x: gesture.scale, y: gesture.scale)
+            gesture.scale = 1
+            break
+            
+        case .ended, .cancelled:
+            self.viewController.viewDidLayoutSubviews()
+            break
+        default:
+            break
+        }
     }
     
-    @objc func rotate() {
-        
+    @objc func rotateElement(_ gesture : UIRotationGestureRecognizer) {
+        switch gesture.state {
+        case .began, .changed:
+            description.rotate(value: gesture.rotation)
+            
+            self.item.transform = self.item.transform.rotated(by: gesture.rotation)
+            gesture.rotation = 0
+            break
+        case .ended, .cancelled:
+            self.viewController.viewDidLayoutSubviews()
+            break
+        default:
+            break
+        }
     }
 }

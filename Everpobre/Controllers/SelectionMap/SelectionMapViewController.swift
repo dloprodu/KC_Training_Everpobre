@@ -11,7 +11,9 @@ import MapKit
 import CoreLocation
 import Contacts
 
-typealias MapDidSelection = (Double, Double, String?)->Void
+protocol SelectionMapViewControllerDelegate: class {
+    func selectionMapViewControl(_ viewControl: SelectionMapViewController, didSelectionLocation: CLLocationCoordinate2D)
+}
 
 class SelectionMapViewController: UIViewController {
     
@@ -20,7 +22,7 @@ class SelectionMapViewController: UIViewController {
     let mapView = MKMapView()
     let textField = UITextField()
     
-    var mapDidSelection: MapDidSelection?
+    weak var delegate: SelectionMapViewControllerDelegate?
     var annotation: MKPointAnnotation?
     
     // MARK: - Initialization
@@ -102,6 +104,11 @@ class SelectionMapViewController: UIViewController {
         }
         
         geoCoder.reverseGeocodeLocation(location) { (placeMarkArray, error) in
+            if error != nil {
+                self.delegate?.selectionMapViewControl(self, didSelectionLocation: coord)
+                return
+            }
+            
             if let places = placeMarkArray {
                 if let place = places.first {
                     DispatchQueue.main.async {
@@ -113,16 +120,12 @@ class SelectionMapViewController: UIViewController {
                             
                             self.textField.text = self.annotation?.title
                             
-                            if self.mapDidSelection != nil {
-                                self.mapDidSelection!(coord.latitude, coord.longitude, self.textField.text)
-                            }
+                            self.delegate?.selectionMapViewControl(self, didSelectionLocation: coord)
                         } else {
                             self.annotation = MKPointAnnotation()
                             self.annotation?.coordinate = coord;
                             
-                            if self.mapDidSelection != nil {
-                                self.mapDidSelection!(coord.latitude, coord.longitude, nil)
-                            }
+                            self.delegate?.selectionMapViewControl(self, didSelectionLocation: coord)
                         }
                     }
                 }

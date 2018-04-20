@@ -37,7 +37,6 @@ class NoteViewController: UIViewController {
         self.formatter = DateFormatter()
         self.formatter.dateFormat = "dd.MM.yyyy"
         self.pictures = [NoteMediaElement<UIImageView>]()
-        
         super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
         
         title = "Detail"
@@ -71,6 +70,9 @@ class NoteViewController: UIViewController {
         swipeGesture.direction = .down
         
         view.addGestureRecognizer(swipeGesture)
+        
+        toDateLabel.isUserInteractionEnabled = true
+        toDateLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectExpireDate)))
     }
 
     override func didReceiveMemoryWarning() {

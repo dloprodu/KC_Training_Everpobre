@@ -11,13 +11,7 @@ import UIKit
 
 extension NoteViewController : UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
-        note?.content = textView.text
-        
-        do {
-            try note?.managedObjectContext?.save()
-        } catch {
-            
-        }
+        note?.update(content: textView.text)
     }
 }
 
