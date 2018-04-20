@@ -27,6 +27,7 @@ extension NoteViewController {
         }
         let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: .destructive, handler: nil)
         
+        actionSheetAlert.prepareForIPAD(source: self.view, bartButtonItem: self.toolbarItems?.first, direction: .down)
         actionSheetAlert.addAction(useCamera)
         actionSheetAlert.addAction(usePhotoLibrary)
         actionSheetAlert.addAction(cancel)

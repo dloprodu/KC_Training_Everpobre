@@ -12,13 +12,12 @@ import CoreData
 enum NoteTableViewControllerKeys: String {
     case NoteDidChangeNotificationName
     case LastNote
-    case LastSection
-    case LastRow
 }
 
 protocol NoteTableViewControllerDelegate: class {
     // should, will, did
     func noteTableViewController (_ viewController: NoteTableViewController, didSelectNote: Note)
+    func noteTableViewController (_ viewController: NoteTableViewController, didDeleteNote: Note)
 }
 
 class NoteTableViewController: UITableViewController {
@@ -87,7 +86,6 @@ class NoteTableViewController: UITableViewController {
         super.viewWillAppear(animated)
         
         self.setupUI()
-        self.restoreLastSelection()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -104,21 +102,27 @@ class NoteTableViewController: UITableViewController {
         // return fetchResultController.sections?[section].name ?? "-"
         let note = fetchResultController.object(at: IndexPath(row: 0, section: section))
         
-        let itsSectionName = note.notebook?.name
-        
-        return itsSectionName
+        return note.notebook?.name
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fetchResultController.sections?[section].numberOfObjects ?? 0
+        //return fetchResultController.sections?[section].numberOfObjects ?? 0
+        let note = fetchResultController.object(at: IndexPath(row: 0, section: section))
+        
+        return note.notebook?.notes?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier") ??
             UITableViewCell(style: .value1, reuseIdentifier: "reuseIdentifier")
-
-        cell.textLabel?.text = fetchResultController.object(at: indexPath).title
-        cell.detailTextLabel?.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(fetchResultController.object(at: indexPath).createdAtTI)))
+        
+        guard let note = getNote(at: indexPath) else {
+            cell.textLabel?.text = "[error]"
+            return cell
+        }
+        
+        cell.textLabel?.text = note.title
+        cell.detailTextLabel?.text = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(note.createdAtTI)))
         //cell.accessoryType = .disclosureIndicator
         
         return cell
@@ -131,12 +135,19 @@ class NoteTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         switch editingStyle {
         case .delete:
-            let note = fetchResultController.object(at: indexPath)
+            guard let note = getNote(at: indexPath) else {
+                return
+            }
             
             let confirmDelete = UIAlertController(title: "Remove note", message: "Are you sure you would like to delete \"\(note.title!)\" from your library?", preferredStyle: .actionSheet)
             
             let deleteAction = UIAlertAction(title: "Delete", style: .default, handler: { (action: UIAlertAction) -> Void in
                 Note.delete(note)
+                let collapsed = self.splitViewController?.isCollapsed ?? true
+                
+                if !collapsed {
+                    self.delegate?.noteTableViewController(self, didDeleteNote: note)
+                }
             })
             
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -156,7 +167,10 @@ class NoteTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let note = fetchResultController.object(at: indexPath)
+        guard let note = getNote(at: indexPath) else {
+            return
+        }
+        
         let collapsed = splitViewController?.isCollapsed ?? true
         
         if collapsed {
@@ -170,12 +184,14 @@ class NoteTableViewController: UITableViewController {
             userInfo: [NoteTableViewControllerKeys.LastNote.rawValue: note])
         
         NotificationCenter.default.post(notification)
-        
-        // Guardar las coordenadas (section, row) de la última casa seleccionada
-        saveLastSelectedNote(at: indexPath)
     }
     
     // MARk: - Helpers
+    
+    func getNote(at indexPath: IndexPath) -> Note? {
+        let first = fetchResultController.object(at: IndexPath(row: 0, section: indexPath.section))
+        return first.notebook?.notes?.allObjects[indexPath.row] as? Note ?? nil
+    }
     
     func setupUI() {
         navigationController?.isToolbarHidden = false
@@ -193,68 +209,5 @@ class NoteTableViewController: UITableViewController {
         // Gestures
         addNoteButton.customView?.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(selectNotebook)))
         addNoteButton.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(addNewNote)))
-    }
-    
-    func restoreLastSelection() {
-        /*
-        if lastSelectionRestored {
-            return
-        }
-        
-        lastSelectionRestored = true
-        
-        if (self.tableView.numberOfSections == 0) {
-            return
-        }
-        
-        var section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
-        if (section >= self.tableView.numberOfSections) {
-            section = 0
-        }
-        
-        if (self.tableView.numberOfRows(inSection: section) == 0) {
-            return
-        }
-        
-        var row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
-        if (row >= self.tableView.numberOfRows(inSection: section)) {
-            row = 0
-        }
-        
-        let indexPath = IndexPath(item: row, section: section)
-        
-        self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
-        
-        let note = fetchResultController.object(at: indexPath)
-        let collapsed = splitViewController?.isCollapsed ?? true
-        
-        if !collapsed {
-            delegate?.noteTableViewController(self, didSelectNote: note)
-        }
-        */
-    }
-    
-    // MARK: - Save last selection
-
-    func saveLastSelectedNote(at indexPath: IndexPath) {
-        let defaults = UserDefaults.standard
-        defaults.set(indexPath.section, forKey: NoteTableViewControllerKeys.LastRow.rawValue)
-        defaults.set(indexPath.row, forKey: NoteTableViewControllerKeys.LastRow.rawValue)
-        defaults.synchronize()
-    }
-    
-    func lastSelectedNote() -> Note? {
-        let sections = fetchResultController?.sections?.count ?? 0
-        
-        if (sections == 0) {
-            return nil
-        }
-        
-        let section = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastSection.rawValue)
-        let row = UserDefaults.standard.integer(forKey: NoteTableViewControllerKeys.LastRow.rawValue)
-        
-        let note = fetchResultController.object(at: IndexPath(row: row, section: section))
-        
-        return note
     }
 }

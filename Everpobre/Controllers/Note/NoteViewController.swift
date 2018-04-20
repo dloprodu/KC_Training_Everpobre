@@ -113,7 +113,7 @@ class NoteViewController: UIViewController {
         
         if (self.pictures?.count == 0) {
             note?.pictures?.forEach({ (notePicture) -> Void in
-                let media = NoteMediaElement<UIImageView>(self, container: self.mainStackView, toItem: self.contentTextView)
+                let media = NoteMediaElement<UIImageView>(notePicture as! NotePicture, viewController: self, container: self.mainStackView, toItem: self.contentTextView)
                 media.item.image = UIImage(data: (notePicture as! NotePicture).picture!)
                 self.pictures?.append(media)
             })
@@ -127,8 +127,8 @@ class NoteViewController: UIViewController {
             return
         }
         
-        if mapView == nil {
-            mapView = NoteMediaElement<MKMapView>(self, container: self.mainStackView, toItem: contentTextView)
+        if mapView == nil, let note = self.note {
+            mapView = NoteMediaElement<MKMapView>(note, viewController: self, container: self.mainStackView, toItem: contentTextView)
         }
         
         let coord = CLLocationCoordinate2D(latitude: note?.lat ?? 0, longitude: note?.long ?? 0)

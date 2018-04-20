@@ -14,4 +14,11 @@ extension NoteViewByCodeController : NoteTableViewControllerDelegate {
         self.note = didSelectNote
         self.syncModelWithView()
     }
+    
+    func noteTableViewController(_ viewController: NoteTableViewController, didDeleteNote: Note) {
+        if self.note?.objectID == didDeleteNote.objectID {
+            self.note = nil
+            self.syncModelWithView()
+        }
+    }
 }

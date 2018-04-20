@@ -8,12 +8,20 @@
 
 import Foundation
 import UIKit
+import CoreData
 
 struct NoteMediaDescription {
-    var point: CGPoint = CGPoint(x: 0, y: 15)
-    var relativePoint: CGPoint = CGPoint(x: 0, y: 0)
-    var scale: CGFloat = 1
-    var rotation: CGFloat = 0
+    var point: CGPoint;
+    var relativePoint: CGPoint
+    var scale: CGFloat
+    var rotation: CGFloat
+    
+    init(x: Float = 0, y: Float = 0, scale: Float = 1, rotation: Float = 0) {
+        self.point = CGPoint(x: CGFloat( x ), y: CGFloat( y ))
+        self.relativePoint = CGPoint(x: 0, y: 0)
+        self.scale = CGFloat( scale )
+        self.rotation = CGFloat( rotation )
+    }
     
     mutating func relativePointAt(_ point: CGPoint) {
         relativePoint = point
@@ -36,19 +44,29 @@ struct NoteMediaDescription {
 class NoteMediaElement<Element> where Element: UIView {
     let item: Element
     weak var toItem: UIView!
-    weak var viewController: NoteViewController!
+    weak var noteViewController: NoteViewController!
     let top: NSLayoutConstraint
     let left: NSLayoutConstraint
+    let object: NSManagedObject!
     
     let constraints: [NSLayoutConstraint]
     var description: NoteMediaDescription
     var transformBeforeMove: CGAffineTransform = CGAffineTransform.identity
 
-    init(_ viewController: NoteViewController, container: UIView, toItem: UIView) {
+    init(_ object: NSManagedObject, viewController: NoteViewController, container: UIView, toItem: UIView) {
         self.item = Element()
         self.toItem = toItem
-        self.viewController = viewController
-        self.description = NoteMediaDescription()
+        self.noteViewController = viewController
+        
+        self.object = object
+        
+        if let note = object as? Note {
+            self.description = NoteMediaDescription(x: note.locationX, y: note.locationY, scale: 1, rotation: 0)
+        } else if let picture = object as? NotePicture {
+            self.description = NoteMediaDescription(x: picture.locationX, y: picture.locationY, scale: picture.scale, rotation: picture.rotation)
+        } else {
+            self.description = NoteMediaDescription()
+        }
         
         container.addSubview(self.item)
         
@@ -76,10 +94,15 @@ class NoteMediaElement<Element> where Element: UIView {
         self.item.addGestureRecognizer(UIRotationGestureRecognizer(target: self, action: #selector(rotateElement)))
     }
     
+    deinit {
+        self.item.superview?.removeConstraints(constraints)
+        self.item.removeFromSuperview()
+    }
+    
     @objc func moveElement(_ gesture : UILongPressGestureRecognizer) {
         switch gesture.state {
         case .began:
-            self.viewController.closeKeyboard()
+            self.noteViewController.closeKeyboard()
             description.relativePointAt( gesture.location(in: gesture.view) )
             UIView.animate(withDuration: 0.1, animations: {
                 self.transformBeforeMove = self.item.transform
@@ -94,10 +117,11 @@ class NoteMediaElement<Element> where Element: UIView {
         case .ended, .cancelled:
             UIView.animate(withDuration: 0.1, animations: {
                 self.item.transform = self.transformBeforeMove
-                self.viewController.viewDidLayoutSubviews()
+                self.noteViewController.viewDidLayoutSubviews()
                 //self.viewController.view.layoutIfNeeded()
                 //self.viewController.contentTextView.layoutIfNeeded()
             })
+            self.updateObject()
             break
         default:
             break
@@ -124,7 +148,8 @@ class NoteMediaElement<Element> where Element: UIView {
             break
             
         case .ended, .cancelled:
-            self.viewController.viewDidLayoutSubviews()
+            self.noteViewController.viewDidLayoutSubviews()
+            self.updateObject()
             break
         default:
             break
@@ -140,10 +165,19 @@ class NoteMediaElement<Element> where Element: UIView {
             gesture.rotation = 0
             break
         case .ended, .cancelled:
-            self.viewController.viewDidLayoutSubviews()
+            self.noteViewController.viewDidLayoutSubviews()
+            self.updateObject()
             break
         default:
             break
+        }
+    }
+    
+    func updateObject() {
+        if let note = object as? Note {
+            note.update(locationX: Float( description.point.x ), y: Float( description.point.y ))
+        } else if let picture = object as? NotePicture {
+            picture.update(locationX: Float( description.point.x ), y: Float( description.point.y ), scale: Float( description.scale ), rotation: Float( description.rotation ))
         }
     }
 }

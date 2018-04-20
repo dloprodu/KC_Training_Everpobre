@@ -11,6 +11,17 @@ import Foundation
 extension NoteViewController : NoteTableViewControllerDelegate {
     func noteTableViewController(_ viewController: NoteTableViewController, didSelectNote: Note) {
         self.note = didSelectNote
+        
+        self.pictures = []
+        self.mapView = nil
+        
         self.syncModelWithView()
+    }
+    
+    func noteTableViewController(_ viewController: NoteTableViewController, didDeleteNote: Note) {
+        if self.note?.objectID == didDeleteNote.objectID {
+            self.note = nil
+            self.syncModelWithView()
+        }
     }
 }

@@ -5,6 +5,8 @@
         <attribute name="createdAtTI" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="expirationAtTI" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="locationX" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="locationY" optional="YES" attributeType="Float" defaultValueString="15" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="long" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
         <relationship name="notebook" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Notebook" inverseName="notes" inverseEntity="Notebook" syncable="YES"/>
@@ -18,12 +20,16 @@
         <relationship name="notes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Note" inverseName="notebook" inverseEntity="Note" syncable="YES"/>
     </entity>
     <entity name="NotePicture" representedClassName="NotePicture" syncable="YES" codeGenerationType="class">
+        <attribute name="locationX" optional="YES" attributeType="Float" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="locationY" optional="YES" attributeType="Float" defaultValueString="15" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="picture" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="rotation" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="scale" optional="YES" attributeType="Float" defaultValueString="1" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="note" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Note" inverseName="pictures" inverseEntity="Note" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Note" positionX="-9" positionY="54" width="128" height="165"/>
+        <element name="Note" positionX="-9" positionY="54" width="128" height="195"/>
         <element name="Notebook" positionX="-225" positionY="26" width="128" height="120"/>
-        <element name="NotePicture" positionX="-117" positionY="99" width="128" height="75"/>
+        <element name="NotePicture" positionX="-117" positionY="99" width="128" height="135"/>
     </elements>
 </model>

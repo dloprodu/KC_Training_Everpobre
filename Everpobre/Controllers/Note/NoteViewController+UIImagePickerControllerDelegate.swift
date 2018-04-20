@@ -14,10 +14,6 @@ extension NoteViewController : UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        let media = NoteMediaElement<UIImageView>(self, container: self.mainStackView, toItem: self.contentTextView)
-        media.item.image = image
-        
-        self.pictures?.append(media)
         
         guard let imageData = UIImageJPEGRepresentation(image, 1) else {
             picker.dismiss(animated: true, completion: nil)
@@ -29,9 +25,13 @@ extension NoteViewController : UIImagePickerControllerDelegate {
             return
         }
         
-        NotePicture.create(picture: imageData, parent: note)
-        
-        picker.dismiss(animated: true, completion: nil)
+        NotePicture.create(picture: imageData, parent: note) { notePicture in
+            let media = NoteMediaElement<UIImageView>(notePicture, viewController: self, container: self.mainStackView, toItem: self.contentTextView)
+            media.item.image = image
+            
+            self.pictures?.append(media)
+            picker.dismiss(animated: true, completion: nil)
+        }
     }
 }
 

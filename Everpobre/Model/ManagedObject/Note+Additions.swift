@@ -115,6 +115,23 @@ extension Note {
         }
     }
     
+    func update(locationX x: Float, y: Float) {
+        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
+        
+        backMOC.perform {
+            let backNote = backMOC.object(with: self.objectID) as! Note
+            
+            backNote.locationX = x
+            backNote.locationY = y
+            
+            do {
+                try backMOC.save()
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
     /*
      override public func setValue(_ value: Any?, forUndefinedKey key: String) {
      let keyToIgnore = ["date", "content"]
