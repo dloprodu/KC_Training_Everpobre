@@ -15,7 +15,7 @@ class MasterViewController: UISplitViewController {
     let noteTableVC: NoteTableViewController
     let noteTableNavC: UINavigationController
     
-    let noteDetailVC: NoteViewByCodeController
+    let noteDetailVC: NoteViewController
     let noteDetailNavC: UINavigationController
     
     // MARK: - Initialization
@@ -24,13 +24,14 @@ class MasterViewController: UISplitViewController {
         self.noteTableVC = NoteTableViewController()
         self.noteTableNavC = self.noteTableVC.wrappedInNavigation()
         
-        self.noteDetailVC = NoteViewByCodeController(model: noteTableVC.lastSelectedNote())
+        self.noteDetailVC = NoteViewController(model: nil)
         self.noteDetailNavC = self.noteDetailVC.wrappedInNavigation()
         
         super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
         
         self.noteTableVC.delegate = self.noteDetailVC
         
+        self.preferredDisplayMode = .allVisible
         self.viewControllers = [
             self.noteTableNavC,
             self.noteDetailNavC

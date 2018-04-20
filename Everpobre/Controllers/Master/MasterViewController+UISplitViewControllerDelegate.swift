@@ -30,7 +30,7 @@ extension MasterViewController : UISplitViewControllerDelegate {
                 views.append(view)
             }
             
-            if let detailVC = view as? NoteViewByCodeController {
+            if let detailVC = view as? NoteViewController {
                 model = detailVC.note
             }
             

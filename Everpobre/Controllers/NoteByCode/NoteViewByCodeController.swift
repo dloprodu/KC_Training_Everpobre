@@ -15,7 +15,9 @@ class NoteViewByCodeController: UIViewController  {
     let formatter: DateFormatter
     
     let dateLabel = UILabel()
-    let expirationDate = UILabel()
+    let dateFromLabel = UILabel()
+    let expirationDateLabel = UILabel()
+    let dateToLabel = UILabel()
     let titleTextField = UITextField()
     let noteTextView = UITextView()
     
@@ -37,7 +39,7 @@ class NoteViewByCodeController: UIViewController  {
     init(model: Note?) {
         self.note = model
         self.formatter = DateFormatter()
-        self.formatter.dateFormat = "yyyy/MM/dd"
+        self.formatter.dateFormat = "dd.MM.yyyy"
         
         super.init(nibName: nil, bundle: Bundle(for: type(of: self)))
         
@@ -51,38 +53,47 @@ class NoteViewByCodeController: UIViewController  {
     // MARK: - Life Cycle
     
     override func loadView() {
-        
         let backView = UIView()
         backView.backgroundColor = .white
         
-        // Configure label
-        dateLabel.text = "----/--/--"
+        // Configure 'from' label
+        dateFromLabel.text = "From"
+        dateFromLabel.textColor = UIColor.lightGray
+        backView.addSubview(dateFromLabel)
+        
+        // Configure createAt label
+        dateLabel.text = "--.--.----"
         backView.addSubview(dateLabel)
         
-        // Configure Expiration label
-        expirationDate.text = "----/--/--"
-        backView.addSubview(expirationDate)
+        // Configure 'to' label
+        dateToLabel.text = "to"
+        dateToLabel.textColor = UIColor.lightGray
+        backView.addSubview(dateToLabel)
         
+        // Configure ExpirationAt label
+        expirationDateLabel.text = "--.--.----"
+        backView.addSubview(expirationDateLabel)
         
         // Configure textField
-        titleTextField.placeholder = "Title note"
+        titleTextField.placeholder = "Type title ..."
         backView.addSubview(titleTextField)
         
         // Configure noteTextView
-        noteTextView.text = "..."
-        
+        noteTextView.text = ""
         backView.addSubview(noteTextView)
         
         // Configure imageView
         imageView.backgroundColor = .red
         backView.addSubview(imageView)
         
-        // MARK: Autolayout.
+        // MARK: Autolayout
         
+        dateFromLabel.translatesAutoresizingMaskIntoConstraints = false
+        dateToLabel.translatesAutoresizingMaskIntoConstraints = false
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
+        expirationDateLabel.translatesAutoresizingMaskIntoConstraints = false
         noteTextView.translatesAutoresizingMaskIntoConstraints = false
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
-        expirationDate.translatesAutoresizingMaskIntoConstraints = false
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -93,29 +104,38 @@ class NoteViewByCodeController: UIViewController  {
          views: [String : Any]) -> [NSLayoutConstraint]
          */
         
-        let viewDict = ["dateLabel":dateLabel,"noteTextView":noteTextView,"titleTextField":titleTextField,"expirationDate":expirationDate]
+        let viewDict = [
+            "dateFromLabel": dateFromLabel,
+            "dateToLabel": dateToLabel,
+            "dateLabel": dateLabel,
+            "expirationDateLabel": expirationDateLabel,
+            "noteTextView": noteTextView,
+            "titleTextField": titleTextField
+        ]
         
         // Horizontals
-        var constraints = NSLayoutConstraint.constraints(withVisualFormat: "|-10-[titleTextField]-10-[expirationDate]-10-[dateLabel]-10-|", options: [], metrics: nil, views: viewDict)
+        var constraints = NSLayoutConstraint.constraints(withVisualFormat: "|-10-[titleTextField]-10-[dateFromLabel]-10-[dateLabel]-10-[dateToLabel]-10-[expirationDateLabel]-10-|", options: [], metrics: nil, views: viewDict)
         constraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "|-10-[noteTextView]-10-|", options: [], metrics: nil, views: viewDict))
         
         // Verticals
-        
         constraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "V:[dateLabel]-10-[noteTextView]-10-|", options: [], metrics: nil, views: viewDict))
         
         constraints.append(NSLayoutConstraint(item: dateLabel, attribute: .top, relatedBy: .equal, toItem: backView.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 10))
-        
         
         // Option A
         // dateLabel.topAnchor.constraint(equalTo: backView.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         
         // Option B, less to explain.
         
-        //    constraints.append(NSLayoutConstraint(item: dateLabel, attribute: .top, relatedBy: .equal, toItem: backView.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 10))
+        // constraints.append(NSLayoutConstraint(item: dateLabel, attribute: .top, relatedBy: .equal, toItem: backView.safeAreaLayoutGuide, attribute: .top, multiplier: 1, constant: 10))
         
         constraints.append(NSLayoutConstraint(item: titleTextField, attribute: .lastBaseline, relatedBy: .equal, toItem: dateLabel, attribute: .lastBaseline, multiplier: 1, constant: 0))
         
-        constraints.append(NSLayoutConstraint(item: expirationDate, attribute: .lastBaseline, relatedBy: .equal, toItem: dateLabel, attribute: .lastBaseline, multiplier: 1, constant: 0))
+        constraints.append(NSLayoutConstraint(item: dateFromLabel, attribute: .lastBaseline, relatedBy: .equal, toItem: dateLabel, attribute: .lastBaseline, multiplier: 1, constant: 0))
+        
+        constraints.append(NSLayoutConstraint(item: dateToLabel, attribute: .lastBaseline, relatedBy: .equal, toItem: dateLabel, attribute: .lastBaseline, multiplier: 1, constant: 0))
+        
+        constraints.append(NSLayoutConstraint(item: expirationDateLabel, attribute: .lastBaseline, relatedBy: .equal, toItem: dateLabel, attribute: .lastBaseline, multiplier: 1, constant: 0))
         
         // Img View Constraint.
         
@@ -133,7 +153,6 @@ class NoteViewByCodeController: UIViewController  {
         
         imgConstraints.append(contentsOf: [topImgConstraint,bottomImgConstraint,leftImgConstraint,rightImgConstraint])
         
-        
         backView.addConstraints(constraints)
         backView.addConstraints(imgConstraints)
         
@@ -147,6 +166,7 @@ class NoteViewByCodeController: UIViewController  {
         
         // Delegates
         titleTextField.delegate = self
+        noteTextView.delegate = self
         
         // Navigation Controller
         navigationController?.isToolbarHidden = false
@@ -199,9 +219,15 @@ class NoteViewByCodeController: UIViewController  {
     
     func syncModelWithView() {
         dateLabel.text = self.formatter.string(from: Date(timeIntervalSince1970: TimeInterval(self.note?.createdAtTI ?? 0)))
-        // expirationDate.text =
+        
+        if let expiration = note?.expirationAtTI {
+            expirationDateLabel.text = self.formatter.string(from: Date(timeIntervalSince1970: TimeInterval(expiration)))
+        } else {
+            expirationDateLabel.text = "--.--.----"
+        }
+        
         titleTextField.text = self.note?.title
-        noteTextView.text = "\( (self.note?.notebook?.name ?? "") ) - \( (self.note?.content ?? "") )"
+        noteTextView.text = self.note?.content
         
        // imageView
     }

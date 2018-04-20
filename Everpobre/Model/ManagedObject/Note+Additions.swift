@@ -35,14 +35,6 @@ extension Note {
             do {
                 try backMOC.save()
             } catch { }
-            
-            // Ya no es necesario con NSFetchedController
-            //DispatchQueue.main.async {
-            //    let viewNote = DataManager.shared.persistentContainer.viewContext.object(with: note.objectID) as! Note
-            
-            //    self.notes.append(viewNote)
-            //    self.tableView.reloadData()
-            //}
         }
     }
     
@@ -58,8 +50,86 @@ extension Note {
         }
     }
     
-    func update(title: String, content: String) {
-        // TODO
+    func update(title: String?) {
+        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
+        
+        backMOC.perform {
+            let backNote = backMOC.object(with: self.objectID) as! Note
+            
+            backNote.title = title
+            
+            do {
+                try backMOC.save()
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func update(content: String?) {
+        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
+        
+        backMOC.perform {
+            let backNote = backMOC.object(with: self.objectID) as! Note
+            
+            backNote.content = content
+            
+            do {
+                try backMOC.save()
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func update(expirationAtTI: Double) {
+        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
+        
+        backMOC.perform {
+            let backNote = backMOC.object(with: self.objectID) as! Note
+            
+            backNote.expirationAtTI = expirationAtTI
+            
+            do {
+                try backMOC.save()
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func update(lat: Double, long: Double) {
+        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
+        
+        backMOC.perform {
+            let backNote = backMOC.object(with: self.objectID) as! Note
+            
+            backNote.lat = lat
+            backNote.long = long
+            
+            do {
+                try backMOC.save()
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func update(locationX x: Float, y: Float) {
+        let backMOC = DataManager.shared.persistentContainer.newBackgroundContext()
+        
+        backMOC.perform {
+            let backNote = backMOC.object(with: self.objectID) as! Note
+            
+            backNote.locationX = x
+            backNote.locationY = y
+            
+            do {
+                try backMOC.save()
+            } catch {
+                print(error)
+            }
+        }
     }
     
     /*
