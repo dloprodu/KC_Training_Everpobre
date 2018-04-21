@@ -77,7 +77,7 @@ extension Notebook {
         fetchRequest.entity = NSEntityDescription.entity(forEntityName: "Notebook", in: moc)
         
         let sortByNotebookDefault = NSSortDescriptor(key: "isDefault", ascending: false)
-        let sortByNotebookName = NSSortDescriptor(key: "name", ascending: true)
+        let sortByNotebookName = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))
         fetchRequest.sortDescriptors = [sortByNotebookDefault, sortByNotebookName]
         
         fetchRequest.fetchBatchSize = 50
