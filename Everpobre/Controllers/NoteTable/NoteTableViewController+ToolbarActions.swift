@@ -18,11 +18,7 @@ extension NoteTableViewController {
     @objc func showNotebooks() {
         let notebookVC = NotebookTableViewController()
         notebookVC.didDismiss = {
-            do {
-                try self.fetchResultController.performFetch()
-            } catch { }
-            
-            self.tableView.reloadData()
+            self.loadNotes()
         }
         
         let navVC = notebookVC.wrappedInNavigation()
