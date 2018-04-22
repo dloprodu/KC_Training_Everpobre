@@ -58,11 +58,15 @@ class NoteViewController: UIViewController {
         
         let photoBarButton = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(catchPhoto))
         
-        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let flexible1 = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         
         let mapBarButton = UIBarButtonItem(title: "Map", style: .done, target: self, action: #selector(addLocation))
         
-        self.setToolbarItems([photoBarButton,flexible,mapBarButton], animated: false)
+        let flexible2 = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        let mooveToButton = UIBarButtonItem(title: "Notebook", style: .done, target: self, action: #selector(changeNotebook))
+        
+        self.setToolbarItems([photoBarButton, flexible1, mapBarButton, flexible2, mooveToButton], animated: false)
         
         // Gestures
         
